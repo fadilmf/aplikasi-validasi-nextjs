@@ -1,11 +1,7 @@
-"use client";
-
 import "../../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import BottomNavbar from "@/components/BottomNavbar";
 import Sidebar from "@/components/Sidebar";
-import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
