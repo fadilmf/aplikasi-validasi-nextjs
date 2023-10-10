@@ -65,7 +65,8 @@ export async function GET(req: NextRequest) {
 
     for (let i = 0; i < devices.length; i++) {
       const device = devices[i];
-      if (device.isValid) {
+      if (device.isValid && typeof device.validAt != "undefined") {
+        console.log("masuk");
         const validAt = device.validAt;
         validAt.setDate(validAt.getDate() + 30);
         if (validAt <= new Date()) {

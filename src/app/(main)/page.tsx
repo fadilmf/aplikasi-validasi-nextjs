@@ -18,12 +18,12 @@ export default function Home() {
 
   useEffect(() => {
     fetchDevices().then((devices) => {
-      setActiveDevices(devices.length);
+      setActiveDevices(devices?.length);
       setValidDevices(
-        devices.filter((d: { isValid: boolean }) => d.isValid).length
+        devices?.filter((d: { isValid: boolean }) => d.isValid).length
       );
       setInvalidDevices(
-        devices.filter((d: { isValid: boolean }) => !d.isValid).length
+        devices?.filter((d: { isValid: boolean }) => !d.isValid).length
       );
     });
   });

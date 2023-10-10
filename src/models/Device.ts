@@ -1,10 +1,13 @@
-import IDevice from "@/types/IDevice";
 import mongoose, { Schema } from "mongoose";
 
-const deviceSchema = new Schema<IDevice>(
+const deviceSchema = new Schema(
   {
     sn: {
       type: Number,
+      required: true,
+    },
+    merk: {
+      type: String,
       required: true,
     },
     csm: {
@@ -55,7 +58,6 @@ const deviceSchema = new Schema<IDevice>(
   }
 );
 
-const Device =
-  mongoose.models.Device || mongoose.model<IDevice>("Device", deviceSchema);
+const Device = mongoose.models.Device || mongoose.model("Device", deviceSchema);
 
 export default Device;

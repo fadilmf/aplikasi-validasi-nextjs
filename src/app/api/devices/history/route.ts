@@ -11,6 +11,9 @@ export async function GET(req: NextRequest) {
     const regional = session?.user.regional;
 
     const sn = req.nextUrl.searchParams.get("sn");
+    const id = req.nextUrl.searchParams.get("id");
+
+    const query: { [k: string]: any } = {};
 
     if (!sn) {
       return NextResponse.json(
@@ -22,7 +25,13 @@ export async function GET(req: NextRequest) {
         }
       );
     }
-    const history = await History.find({ device_sn: sn })
+
+    query.device_sn = sn;
+    if (id) query._id = id;
+
+    console.log(query);
+
+    const history = await History.find(query)
       .populate("user", "username")
       .exec();
 
@@ -37,9 +46,24 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      history,
-    });
+    if (history.length == 1) {
+      const images: string[] = [];
+
+      history[0].images?.forEach((image: Buffer) => {
+        const base64 = image
+          .toString("base64")
+          .replace("dataimage", "data:image")
+          .replace("base64", ";base64,");
+        images.push(base64);
+      });
+
+      return NextResponse.json({
+        history: [{ ...history[0], images }],
+      });
+    } else
+      return NextResponse.json({
+        history,
+      });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
