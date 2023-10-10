@@ -1,5 +1,6 @@
 "use client";
 
+import History from "@/types/History";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -9,7 +10,7 @@ export default function Detail() {
   const [showButtons, setShowButtons] = useState(false);
   const [device, setDevice] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
-  const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState<History[]>([]);
 
   const params = useParams();
   console.log(params);

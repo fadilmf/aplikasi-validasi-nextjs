@@ -1,5 +1,6 @@
 "use client";
 
+import History from "@/types/History";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -8,7 +9,7 @@ import { useEffect, useState } from "react";
 export default function HistoryId() {
   const [showButtons, setShowButtons] = useState(false);
   const [device, setDevice] = useState<any[]>([]);
-  const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState<History[]>([]);
 
   const params = useParams();
   console.log(params);
@@ -37,12 +38,10 @@ export default function HistoryId() {
 
   useEffect(() => {
     fetchDevices().then((devices) => {
-      console.log("device", devices);
       setDevice(devices);
     });
 
     fetchHistory().then((histories) => {
-      console.log("ini histories", histories);
       setHistories(histories);
     });
   }, []);
@@ -100,7 +99,7 @@ export default function HistoryId() {
           </div>
         </div>
         <div className="mt-5">
-          <div className={`grid grid-cols-${histories[0]?.images?.length}`}>
+          <div className={`grid grid-cols-3`}>
             {histories[0]?.images.map((image, i) => (
               <Image
                 key={i}
