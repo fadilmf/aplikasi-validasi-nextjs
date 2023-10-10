@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Device from "@/models/Device";
-import IDevice from "@/types/IDevice";
 import History from "@/models/History";
 
 export async function POST(req: Request) {
