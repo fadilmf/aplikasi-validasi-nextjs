@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     const sn = req.nextUrl.searchParams.get("sn");
     const isValid = req.nextUrl.searchParams.get("isValid");
     const search = req.nextUrl.searchParams.get("search");
+    const count = req.nextUrl.searchParams.get("count");
 
     if (sn) query.sn = sn;
     if (regional !== 0) query.regional = regional;
@@ -57,36 +58,43 @@ export async function GET(req: NextRequest) {
         ];
     }
 
-    console.log(query);
-
-    const devices = await Device.find(query);
-
-    const newDevices = [];
-
-    for (let i = 0; i < devices.length; i++) {
-      const device = devices[i];
-      if (device.isValid && typeof device.validAt != "undefined") {
-        console.log("masuk");
-        const validAt = device.validAt;
-        validAt.setDate(validAt.getDate() + 30);
-        if (validAt <= new Date()) {
-          console.log("tidak valid");
-          await Device.findOneAndUpdate(device._id, {
-            isValid: false,
-            validAt: null,
-          });
-          newDevices.push({ ...device._doc, isValid: false, validAt: null });
+    if (!count) {
+      const newDevices = [];
+      const devices = await Device.find(query);
+      for (let i = 0; i < devices.length; i++) {
+        const device = devices[i];
+        if (device.isValid && typeof device.validAt != "undefined") {
+          console.log("masuk");
+          const validAt = device.validAt;
+          validAt.setDate(validAt.getDate() + 30);
+          if (validAt <= new Date()) {
+            console.log("tidak valid");
+            await Device.findOneAndUpdate(device._id, {
+              isValid: false,
+              validAt: null,
+            });
+            newDevices.push({ ...device._doc, isValid: false, validAt: null });
+          } else {
+            newDevices.push(device);
+          }
         } else {
           newDevices.push(device);
         }
-      } else {
-        newDevices.push(device);
       }
+      return NextResponse.json({
+        devices: newDevices,
+      });
+    } else {
+      const devices = await Device.count();
+      const valid = await Device.count({ isValid: true });
+      return NextResponse.json({
+        devices: {
+          total: devices,
+          valid,
+          invalid: devices - valid,
+        },
+      });
     }
-
-    return NextResponse.json({
-      devices: newDevices,
-    });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
