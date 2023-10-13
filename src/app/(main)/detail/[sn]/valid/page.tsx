@@ -3,17 +3,19 @@
 import Loading from "@/components/Loading";
 import dateTime from "@/util/dateTime";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { createRef, useEffect, useRef, useState } from "react";
 import { MdClose } from "react-icons/md";
 
 export default function ValidPage() {
+  const router = useRouter();
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [locationPermission, setLocationPermission] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const params = useParams();
 
@@ -137,6 +139,8 @@ export default function ValidPage() {
   const handleSubmit = async () => {
     const data = { images, notes, sn: params.sn, location };
 
+    setLoading(true);
+
     const res = await fetch("/api/devices/valid", {
       method: "POST",
       headers: {
@@ -145,7 +149,12 @@ export default function ValidPage() {
       body: JSON.stringify(data),
     });
 
-    console.log(await res.json());
+    if (res.status == 200) {
+      return router.push("../" + params.sn);
+    } else {
+      const json = await res.json();
+      setError(json.message);
+    }
   };
 
   if (loading) return <Loading loading={loading} />;
@@ -228,7 +237,12 @@ export default function ValidPage() {
                   />
                 </label>
               </div>
-              <div className="flex flex-col gap-2 md:flex-row">
+              {error && (
+                <div className="bg-pink-100 border border-pink-700 px-2 py-3 rounded-lg">
+                  {error}
+                </div>
+              )}
+              <div className="flex flex-col gap-2 md:flex-row mt-2">
                 <button
                   className="bg-green-800 hover:bg-green-900 text-white py-2 px-4 rounded-full w-full md:w-auto"
                   onClick={handleSubmit}
