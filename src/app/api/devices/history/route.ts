@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       });
 
       return NextResponse.json({
-        history: [{ ...history[0], images }],
+        history: [{ ...history[0]._doc, images }],
       });
     } else
       return NextResponse.json({

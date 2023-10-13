@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/Loading";
 import History from "@/types/History";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,7 @@ export default function Detail() {
   const [device, setDevice] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [histories, setHistories] = useState<History[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const params = useParams();
   console.log(params);
@@ -36,68 +38,70 @@ export default function Detail() {
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchDevices().then((devices) => {
       console.log("device", devices);
       setDevice(devices);
-    });
-
-    fetchHistory().then((histories) => {
-      console.log("ini histories", histories);
-      setHistories(histories);
+      fetchHistory().then((histories) => {
+        console.log("ini histories", histories);
+        setHistories(histories);
+        setLoading(false);
+      });
     });
   }, []);
 
-  return (
-    <>
-      <div className="container mx-auto p-4 mb-40">
-        <div className="mb-4">
-          <button onClick={goBack} className="text-blue-500">
-            &lt; Kembali
-          </button>
-        </div>
-        <div className="flex flex-wrap">
-          <div className="flex flex-row md:flex-col md:w-1/2">
-            <div className="w-1/3">
-              <Image
-                src={"/img/img_perangkat_aktif.svg"}
-                alt="Device image"
-                width={500}
-                height={500}
-              />
-            </div>
-            <div className="w-2/3 pl-4">
-              <h1 className="text-2xl font-semibold">
-                <div>
-                  SN:
-                  {device[0]?.sn}
-                </div>
-              </h1>
-
-              <p>Status: {device[0]?.isValid ? "Valid" : "Tidak Valid"}</p>
-              <p>Last Validasi: 16-8-23</p>
-            </div>
+  if (loading) return <Loading loading={loading} />;
+  else
+    return (
+      <>
+        <div className="container mx-auto p-4 mb-40">
+          <div className="mb-4">
+            <button onClick={goBack} className="text-blue-500">
+              &lt; Kembali
+            </button>
           </div>
-          <div className="mt-3 w-full md:w-1/2">
-            <h1 className="font-semibold">Detail</h1>
-            <div className="grid grid-cols-2 gap-2">
-              <p>CSM:</p>
-              <p>{device[0]?.csm}</p>
-              <p>Tipe Perangkat:</p>
-              <p>{device[0]?.perangkat}</p>
-              <p>Jenis Perangkat:</p>
-              <p>{device[0]?.jenis}</p>
-              <p>Regional:</p>
-              <p>{device[0]?.regional}</p>
-              <p>Use:</p>
-              <p>{device[0]?.use}</p>
-              <p>NIK:</p>
-              <p>{device[0]?.nik}</p>
-              <p>Nama:</p>
-              <p>{device[0]?.nama}</p>
-              <p>No. Telp:</p>
-              <p>{device[0]?.telp}</p>
+          <div className="flex flex-wrap">
+            <div className="flex flex-row md:flex-col md:w-1/2">
+              <div className="w-1/3">
+                <Image
+                  src={"/img/img_perangkat_aktif.svg"}
+                  alt="Device image"
+                  width={500}
+                  height={500}
+                />
+              </div>
+              <div className="w-2/3 pl-4">
+                <h1 className="text-2xl font-semibold">
+                  <div>
+                    SN:
+                    {device[0]?.sn}
+                  </div>
+                </h1>
+                <p>Status: {device[0]?.isValid ? "Valid" : "Tidak Valid"}</p>
+                <p>Last Validasi: 16-8-23</p>
+              </div>
             </div>
-            {/* <div className="grid grid-cols-4 gap-2">
+            <div className="mt-3 w-full md:w-1/2">
+              <h1 className="font-semibold">Detail</h1>
+              <div className="grid grid-cols-2 gap-2">
+                <p>CSM:</p>
+                <p>{device[0]?.csm}</p>
+                <p>Tipe Perangkat:</p>
+                <p>{device[0]?.perangkat}</p>
+                <p>Jenis Perangkat:</p>
+                <p>{device[0]?.jenis}</p>
+                <p>Regional:</p>
+                <p>{device[0]?.regional}</p>
+                <p>Use:</p>
+                <p>{device[0]?.use}</p>
+                <p>NIK:</p>
+                <p>{device[0]?.nik}</p>
+                <p>Nama:</p>
+                <p>{device[0]?.nama}</p>
+                <p>No. Telp:</p>
+                <p>{device[0]?.telp}</p>
+              </div>
+              {/* <div className="grid grid-cols-4 gap-2">
               <p className="col-span-1">
                 CSM:
                 <hr />
@@ -117,60 +121,60 @@ export default function Detail() {
               <p className="col-span-1">No. Telp:</p>
               <p className="col-span-3">{device.telp}</p>
             </div> */}
+            </div>
           </div>
-        </div>
-        <div className="mt-5">
-          <button
-            className={`w-full bg-green-700 py-2 rounded-full text-white hover:bg-green-800 ${
-              showButtons && "hidden"
-            }`}
-            onClick={handleUpdateClick}
-          >
-            Update
-          </button>
-        </div>
-        <div className="mt-5">
-          {showButtons && (
-            <div className="flex flex-col gap-4">
-              <div className="flex text-center space-x-4 ">
-                <Link
-                  href={params.sn + "/valid"}
-                  className="bg-green-800 py-2 px-4 rounded-full w-full text-white hover:bg-green-900"
+          <div className="mt-5">
+            <button
+              className={`w-full bg-green-700 py-2 rounded-full text-white hover:bg-green-800 ${
+                showButtons && "hidden"
+              }`}
+              onClick={handleUpdateClick}
+            >
+              Update
+            </button>
+          </div>
+          <div className="mt-5">
+            {showButtons && (
+              <div className="flex flex-col gap-4">
+                <div className="flex text-center space-x-4 ">
+                  <Link
+                    href={params.sn + "/valid"}
+                    className="bg-green-800 py-2 px-4 rounded-full w-full text-white hover:bg-green-900"
+                  >
+                    Valid
+                  </Link>
+                  <Link
+                    href={params.sn + "/tidak-valid"}
+                    className="bg-red-500 py-2 px-4 rounded-full w-full text-white hover:bg-red-600"
+                  >
+                    Tidak Valid
+                  </Link>
+                </div>
+                <button
+                  onClick={handleUpdateClick}
+                  className="bg-white border-2 border-green-800 py-2 px-4 rounded-full text-green-800 hover:bg-slate-100"
                 >
-                  Valid
-                </Link>
-                <Link
-                  href={params.sn + "/tidak-valid"}
-                  className="bg-red-500 py-2 px-4 rounded-full w-full text-white hover:bg-red-600"
-                >
-                  Tidak Valid
-                </Link>
+                  Cancel
+                </button>
               </div>
-              <button
-                onClick={handleUpdateClick}
-                className="bg-white border-2 border-green-800 py-2 px-4 rounded-full text-green-800 hover:bg-slate-100"
-              >
-                Cancel
-              </button>
+            )}
+          </div>
+          {histories.length > 0 && (
+            <div className="mt-5">
+              <h1 className="flex justify-center">Validasi History:</h1>
+              <ol className="list-decimal list-inside">
+                {histories.map((history, index) => (
+                  <li key={index}>
+                    <Link href={`${params.sn}/${history._id}`}>
+                      {new Date(history?.createdAt).toLocaleString()}{" "}
+                      <span>by</span> {history?.user?.username}
+                    </Link>
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
         </div>
-        {histories.length > 0 && (
-          <div className="mt-5">
-            <h1 className="flex justify-center">Validasi History:</h1>
-            <ol className="list-decimal list-inside">
-              {histories.map((history, index) => (
-                <li key={index}>
-                  <Link href={`${params.sn}/${history._id}`}>
-                    {new Date(history?.createdAt).toLocaleString()}{" "}
-                    <span>by</span> {history?.user?.username}
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </div>
-    </>
-  );
+      </>
+    );
 }

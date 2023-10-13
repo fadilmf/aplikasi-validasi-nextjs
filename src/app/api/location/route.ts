@@ -15,8 +15,6 @@ export async function GET(req: NextRequest) {
 
     const data = await res.json();
 
-    console.log("ini api key", key);
-    console.log("ini data", data);
     return NextResponse.json(
       {
         data,
