@@ -21,7 +21,8 @@ export default function Search() {
 
   const handleSearch = async () => {
     const devices = await fetchDevices(searchTerm);
-    setDevicesList(devices);
+    console.log("devices", devices);
+    setDevicesList(devices.devices);
   };
 
   const handlePrevious = () => {
@@ -44,17 +45,18 @@ export default function Search() {
         search ? "&search=" + search : ""
       }`
     );
-    const devices = await res.json();
-    return devices.devices;
+    const data = await res.json();
+    return data;
   };
 
   useEffect(() => {
     setLoading(true);
-    fetchDevices().then((devices) => {
-      setDevicesList(devices);
+    fetchDevices().then((data) => {
+      setDevicesList(data.devices);
       setLoading(false);
+      setPageCount(data.pagination.pageCount);
     });
-  }, []);
+  }, [page]);
 
   if (loading) return <Loading loading={loading} />;
   else
@@ -79,9 +81,40 @@ export default function Search() {
             </div>
           </div>
           <div className="text-center mt-4 mb-4">
-            <PaginationBar />
+            <div>
+              <ul className="inline-flex -space-x-px items-center gap-2 text-sm">
+                <li>
+                  <button
+                    disabled={page === 1}
+                    onClick={handlePrevious}
+                    className="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 "
+                  >
+                    Previous
+                  </button>
+                </li>
+                <li>
+                  <div className="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300">
+                    {page} of {pageCount}
+                  </div>
+                </li>
+                <li>
+                  <button
+                    disabled={page === pageCount}
+                    onClick={handleNext}
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 "
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="grid grid-cols-1 gap-4 mt-3">
+            {deviceList.length < 1 && (
+              <div className="text-center">
+                <h1>Device tidak ada</h1>
+              </div>
+            )}
             {deviceList.map((result, index) => (
               <Link
                 href={"/detail/" + result.sn}

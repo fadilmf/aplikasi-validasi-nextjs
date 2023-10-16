@@ -1,10 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { MdLogout } from "react-icons/md";
-import { signOut } from "next-auth/react";
+import { MdLogout, MdPerson } from "react-icons/md";
+import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Navbar() {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user.role === "admin";
+
+  const toggleMenu = () => {
+    setIsProfileOpen(!isProfileOpen);
+  };
+
   return (
     <>
       <nav className="bg-green-800 px-3 md:px-10 py-3 top-0 w-full fixed z-10">
@@ -21,17 +32,46 @@ export default function Navbar() {
                 <li className="text-white">
                   <Link href={"/validasi"}>Validasi</Link>
                 </li>
-                <li className="text-white">
-                  <Link href={"/dashboard"}>Admin Dashboard</Link>
-                </li>
+                {isAdmin && (
+                  <li className="text-white">
+                    <Link href={"/dashboard"}>Admin Dashboard</Link>
+                  </li>
+                )}
               </div>
-              <li className="text-white">
-                <button onClick={() => signOut()}>
-                  <div className="flex items-center border px-2 py-1 rounded-lg hover:bg-red-500 hover:border-red-500 hover:scale-95 transition-all gap-2">
-                    <MdLogout />
-                    Logout
-                  </div>
+              <li className="text-white relative">
+                <button
+                  className="p-1 bg-slate-200 text-gray-600 text-3xl rounded-full"
+                  onClick={toggleMenu}
+                >
+                  <MdPerson />
                 </button>
+                {isProfileOpen && (
+                  <div className="absolute top-2 right-0 mt-8 w-48">
+                    <ul className="bg-white text-black rounded-lg outline-2 shadow-lg py-4 px-4 flex flex-col justify0center space-y-3">
+                      <li>
+                        <Link href={"/profile"} onClick={toggleMenu}>
+                          <div className="flex items-center gap-2">
+                            <MdPerson />
+                            Edit Profile
+                          </div>
+                        </Link>
+                      </li>
+                      <hr />
+                      <li>
+                        <button onClick={() => signOut()}>
+                          <div className="flex items-center gap-2">
+                            <MdLogout />
+                            Logout
+                          </div>
+                        </button>
+                        {/* <div className="flex items-center">
+                          <MdLogout />
+                          Logout
+                        </div> */}
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </li>
             </ul>
           </div>

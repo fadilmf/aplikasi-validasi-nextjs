@@ -33,12 +33,12 @@ export default function Sidebar() {
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      setIsOpen(!isMobile);
-    };
+  const handleResize = () => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    setIsOpen(!isMobile);
+  };
 
+  useEffect(() => {
     window.addEventListener("resize", handleResize);
 
     handleResize();
@@ -62,9 +62,9 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`md:flex h-screen ${isOpen ? "" : "hidden"} md:${
-          isOpen ? "w-80" : "w-20"
-        } fixed`}
+        className={`md:flex h-screen transition-all ${
+          isOpen ? "" : "hidden"
+        } md:${isOpen ? "w-80" : "w-20"} fixed`}
       >
         <div className="h-screen px-4 pt-8 pb-4 bg-slate-50 flex justify-between flex-col border shadow-sm">
           <div className="flex flex-col">
@@ -81,6 +81,10 @@ export default function Sidebar() {
               <Link
                 key={item.id}
                 href={item.link}
+                onClick={() =>
+                  window.matchMedia("(max-width: 768px)").matches &&
+                  setIsOpen(false)
+                }
                 className={`p-2 rounded flex flex-row items-center ${sidebarItem} gap-3 ${
                   pathname === item.link
                     ? "bg-green-600 text-white font-medium"

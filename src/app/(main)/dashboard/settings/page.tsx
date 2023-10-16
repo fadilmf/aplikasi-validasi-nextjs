@@ -1,10 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SettingsPage() {
   const [autoDisableDays, setAutoDisableDays] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [day, setDay] = useState(0);
+
+  const fetchSettings = async () => {
+    const res = await fetch("/api/admin/settings");
+    const data = await res.json();
+    return data.settings[0].expiration_days;
+  };
+
+  useEffect(() => {
+    fetchSettings().then((day) => {
+      setDay(day);
+    });
+  }, []);
 
   const handleAutoDisableDaysChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -26,6 +40,8 @@ export default function SettingsPage() {
           autoDisableDays,
         }),
       });
+
+      setDay(autoDisableDays);
     } catch (error) {
       console.log("Error during registration: ", error);
     }
@@ -46,7 +62,7 @@ export default function SettingsPage() {
         <div className="mb-4">
           <p className="text-gray-700">
             Saat ini, device akan otomatis tidak valid dalam{" "}
-            <strong>30 Hari</strong>.
+            <strong>{day} Hari</strong>.
           </p>
         </div>
         <form onSubmit={handleSubmit}>

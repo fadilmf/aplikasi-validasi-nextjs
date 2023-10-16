@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Papa from "papaparse";
 
 export default function DevicePage() {
   const [sn, setSn] = useState(0);
+  const [merk, setMerk] = useState("");
   const [csm, setCsm] = useState(0);
   const [perangkat, setPerangkat] = useState("");
   const [jenis, setJenis] = useState("");
@@ -15,8 +17,38 @@ export default function DevicePage() {
 
   const [isInputCSV, setIsInputCSV] = useState(false);
 
+  const [csvData, setCsvData] = useState<any[]>([]);
+
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files!![0];
+
+    Papa.parse(file, {
+      header: true, // Jika baris pertama adalah header
+      dynamicTyping: true, // Otomatis deteksi tipe data
+      complete: (result) => {
+        // Hasil pemrosesan CSV
+        const data = result.data;
+
+        // Lakukan sesuatu dengan data, seperti mengirimnya ke API
+        console.log("Data from CSV:", data);
+
+        setCsvData(data);
+      },
+    });
+  };
+
+  const handleCsvSubmit = async () => {
+    fetch("/api/admin/devices/csv", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ devices: csvData }),
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,14 +127,15 @@ export default function DevicePage() {
         )}
         {isInputCSV && (
           <div className="mb-4">
-            <form action="">
-              <input type="file" accept=".csv" />
-              <div className="mt-3">
-                <button className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full">
-                  Add CSV
-                </button>
-              </div>
-            </form>
+            <input type="file" accept=".csv" onChange={handleCSVUpload} />
+            <div className="mt-3">
+              <button
+                onClick={handleCsvSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full"
+              >
+                Add CSV
+              </button>
+            </div>
           </div>
         )}
         {!isInputCSV && (
@@ -114,6 +147,17 @@ export default function DevicePage() {
                 name="serialNumber"
                 value={sn}
                 onChange={(e) => setSn(Number(e.target.value))}
+                className="mt-1 p-2 border rounded w-full"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Merk:</label>
+              <input
+                type="text"
+                name="merk"
+                value={merk}
+                onChange={(e) => setMerk(e.target.value)}
                 className="mt-1 p-2 border rounded w-full"
                 required
               />

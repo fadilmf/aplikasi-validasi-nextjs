@@ -2,6 +2,7 @@
 
 import Loading from "@/components/Loading";
 import History from "@/types/History";
+import dateTime from "@/util/dateTime";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -12,6 +13,7 @@ export default function Detail() {
   const [device, setDevice] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [histories, setHistories] = useState<History[]>([]);
+  const [daysSinceValid, setDaysSinceValid] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
@@ -41,6 +43,9 @@ export default function Detail() {
     setLoading(true);
     fetchDevices().then((devices) => {
       console.log("device", devices);
+      const msSinceValid =
+        new Date().getTime() - new Date(devices[0].validAt).getTime();
+      setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
       setDevice(devices);
       fetchHistory().then((histories) => {
         console.log("ini histories", histories);
@@ -77,10 +82,14 @@ export default function Detail() {
                     {device[0]?.sn}
                   </div>
                 </h1>
+                <p>Merk: {device[0]?.merk}</p>
                 <p>Status: {device[0]?.isValid ? "Valid" : "Tidak Valid"}</p>
-                <p>Last Validasi: 16-8-23</p>
+                {device[0]?.isValid && (
+                  <p>Last Validasi: {dateTime(new Date(device[0].validAt))}</p>
+                )}
               </div>
             </div>
+
             <div className="mt-3 w-full md:w-1/2">
               <h1 className="font-semibold">Detail</h1>
               <div className="grid grid-cols-2 gap-2">
@@ -133,7 +142,7 @@ export default function Detail() {
               Update
             </button>
           </div>
-          <div className="mt-5">
+          <div className="my-5">
             {showButtons && (
               <div className="flex flex-col gap-4">
                 <div className="flex text-center space-x-4 ">
@@ -159,15 +168,22 @@ export default function Detail() {
               </div>
             )}
           </div>
+          {device[0]?.isValid && (
+            <div className="flex justify-center text-center w-full">
+              <h1>Device valid selama {daysSinceValid} hari</h1>
+            </div>
+          )}
           {histories.length > 0 && (
             <div className="mt-5">
-              <h1 className="flex justify-center">Validasi History:</h1>
+              <h1 className="flex justify-center font-medium text-lg mb-3">
+                Validasi History:
+              </h1>
               <ol className="list-decimal list-inside">
                 {histories.map((history, index) => (
                   <li key={index}>
                     <Link href={`${params.sn}/${history._id}`}>
-                      {new Date(history?.createdAt).toLocaleString()}{" "}
-                      <span>by</span> {history?.user?.username}
+                      {dateTime(new Date(history?.createdAt))} <span>by</span>{" "}
+                      {history?.user?.username}
                     </Link>
                   </li>
                 ))}

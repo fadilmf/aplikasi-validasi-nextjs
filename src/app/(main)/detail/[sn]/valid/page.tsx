@@ -154,6 +154,7 @@ export default function ValidPage() {
     } else {
       const json = await res.json();
       setError(json.message);
+      setLoading(false);
     }
   };
 
@@ -221,7 +222,9 @@ export default function ValidPage() {
                     capture
                     hidden
                   />
-                  <div className="text-center w-full">Ambil Gambar</div>
+                  <div className="text-center w-full cursor-pointer">
+                    Ambil Gambar
+                  </div>
                 </label>
               </div>
               <div className="mb-4">

@@ -1,11 +1,16 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MdAdminPanelSettings, MdHome, MdSearch } from "react-icons/md";
 
 export default function BottomNavbar() {
   const pathname = usePathname();
+
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user.role === "admin";
 
   return (
     <>
@@ -34,19 +39,21 @@ export default function BottomNavbar() {
                 Validasi
               </Link>
             </li>
-            <li className="flex-grow-0 flex-shrink-0 w-1/3 md:w-auto">
-              <Link
-                href={"/dashboard"}
-                className={`flex flex-col items-center justify-center py-2 rounded-t-xl hover:bg-gray-200 ${
-                  pathname.startsWith("/dashboard")
-                    ? "text-green-800"
-                    : "text-gray-400"
-                } transition-colors`}
-              >
-                <MdAdminPanelSettings className="text-4xl" />
-                Admin
-              </Link>
-            </li>
+            {isAdmin && (
+              <li className="flex-grow-0 flex-shrink-0 w-1/3 md:w-auto">
+                <Link
+                  href={"/dashboard"}
+                  className={`flex flex-col items-center justify-center py-2 rounded-t-xl hover:bg-gray-200 ${
+                    pathname.startsWith("/dashboard")
+                      ? "text-green-800"
+                      : "text-gray-400"
+                  } transition-colors`}
+                >
+                  <MdAdminPanelSettings className="text-4xl" />
+                  Admin
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </nav>

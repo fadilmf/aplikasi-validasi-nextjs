@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   try {
     const {
       sn,
+      merk,
       csm,
       perangkat,
       jenis,
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
     await connectMongoDB();
     await Device.create({
       sn,
+      merk,
       csm,
       perangkat,
       jenis,

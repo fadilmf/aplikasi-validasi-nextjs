@@ -7,9 +7,12 @@ export async function POST(req: NextRequest) {
     await connectMongoDB();
 
     const { autoDisableDays } = await req.json();
-    console.log(autoDisableDays);
+    console.log("days:", autoDisableDays);
 
-    await Setting.create({ autoDisableDays });
+    await Setting.findOneAndUpdate(
+      { id: 1 },
+      { expiration_days: autoDisableDays }
+    );
     return NextResponse.json(
       {
         message: "Setting berhasil terupdate",
@@ -23,6 +26,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message: "An error occured while updating settings.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    await connectMongoDB();
+    const settings = await Setting.find();
+
+    return NextResponse.json({
+      settings,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        message: "An error occured while fetching settings.",
       },
       {
         status: 500,

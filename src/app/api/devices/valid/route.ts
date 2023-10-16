@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Device from "@/models/Device";
 import History from "@/models/History";
+import watermark from "@/util/watermark";
+import dateTime from "@/util/dateTime";
 
 export async function POST(req: Request) {
   try {
@@ -12,8 +14,6 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     const regional = session?.user.regional;
     const userId = session?.user.id;
-
-    console.log("ini userid: ", userId);
 
     const data = await req.json();
 
@@ -35,9 +35,18 @@ export async function POST(req: Request) {
     );
 
     const images: Buffer[] = [];
-    data.images.forEach((image: string) => {
-      images.push(Buffer.from(image, "base64"));
-    });
+    for (let i = 0; i < data.images.length; i++) {
+      const base64 = await watermark(
+        Buffer.from(data.images[i].split(",")[1], "base64"),
+        {
+          sn: data.sn,
+          datetime: dateTime(),
+          location: data.location,
+        }
+      );
+      console.log(base64);
+      images.push(Buffer.from(base64, "base64"));
+    }
 
     if (images.length <= 0)
       return NextResponse.json(
@@ -57,7 +66,7 @@ export async function POST(req: Request) {
       location: data.location,
     });
 
-    return NextResponse.json({ message: "Device changed" });
+    return NextResponse.json({ message: "Device changed to valid" });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

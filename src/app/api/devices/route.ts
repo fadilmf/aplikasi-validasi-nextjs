@@ -10,12 +10,15 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     const regional = session?.user.regional;
 
+    console.log(regional);
+
     const query: { [k: string]: any } = {};
 
     const sn = req.nextUrl.searchParams.get("sn");
+    const page = req.nextUrl.searchParams.get("page") || 1;
     const isValid = req.nextUrl.searchParams.get("isValid");
     const search = req.nextUrl.searchParams.get("search");
-    const count = req.nextUrl.searchParams.get("count");
+    const homeCount = req.nextUrl.searchParams.get("homeCount");
 
     if (sn) query.sn = sn;
     if (regional !== 0) query.regional = regional;
@@ -58,15 +61,21 @@ export async function GET(req: NextRequest) {
         ];
     }
 
-    if (!count) {
+    if (!homeCount) {
+      const ITEMS_PER_PAGE = 10;
+
+      const skip = (Number(page) - 1) * ITEMS_PER_PAGE;
+
       const newDevices = [];
-      const devices = await Device.find(query);
+      const devices = await Device.find(query).limit(ITEMS_PER_PAGE).skip(skip);
+
+      console.log(devices);
+      const count = await Device.count();
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
         if (device.isValid && typeof device.validAt != "undefined") {
-          console.log("masuk");
           const validAt = device.validAt;
-          validAt.setDate(validAt.getDate() + 30);
+          validAt.setDate(validAt.getDate() + 30); // TODO: ambil dari database
           if (validAt <= new Date()) {
             console.log("tidak valid");
             await Device.findOneAndUpdate(device._id, {
@@ -75,23 +84,43 @@ export async function GET(req: NextRequest) {
             });
             newDevices.push({ ...device._doc, isValid: false, validAt: null });
           } else {
+            validAt.setDate(validAt.getDate() - 30); // TODO: ambil dari database
             newDevices.push(device);
           }
         } else {
           newDevices.push(device);
         }
       }
+
+      console.log(newDevices);
+
+      const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
+
       return NextResponse.json({
         devices: newDevices,
+        pagination: {
+          count,
+          pageCount,
+        },
       });
     } else {
-      const devices = await Device.count();
-      const valid = await Device.count({ isValid: true });
+      const query: { [k: string]: any } = {};
+      if (regional !== 0) query.regional = regional;
+      const devices = await Device.count(query);
+      query.isValid = true;
+      const valid = await Device.count(query);
+
+      // const ITEMS_PER_PAGE = 25;
+      // const pageCount = devices / ITEMS_PER_PAGE;
       return NextResponse.json({
         devices: {
           total: devices,
           valid,
           invalid: devices - valid,
+          // pagination: {
+          //   devices,
+          //   pageCount,
+          // },
         },
       });
     }

@@ -22,12 +22,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
-          <NextTopLoader />
-          <Navbar />
-          <main className="flex-grow mt-14">
-            <AuthProvider>{children}</AuthProvider>
-          </main>
-          <BottomNavbar />
+          <AuthProvider>
+            <NextTopLoader />
+            <Navbar />
+            <main className="flex-grow mt-14">{children}</main>
+            <BottomNavbar />
+          </AuthProvider>
         </div>
       </body>
     </html>

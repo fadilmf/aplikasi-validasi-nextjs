@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const fetchDevices = async () => {
-    const res = await fetch("/api/devices?count=true");
+    const res = await fetch("/api/devices?homeCount=true");
     const devices = await res.json();
     return devices.devices;
   };

@@ -1,5 +1,5 @@
-export default function dateTime() {
-  const currentDateTime = new Date();
+export default function dateTime(date?: Date) {
+  const currentDateTime: Date = date || new Date();
 
   const monthNames = [
     "Januari",

@@ -46,3 +46,24 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    await connectMongoDB();
+    const users = await User.find();
+
+    return NextResponse.json({
+      users,
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        message: "An error occured while adding new device.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

@@ -5,6 +5,7 @@ const deviceSchema = new Schema(
     sn: {
       type: Number,
       required: true,
+      unique: true,
     },
     merk: {
       type: String,
