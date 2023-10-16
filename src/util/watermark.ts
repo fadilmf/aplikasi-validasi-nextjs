@@ -51,6 +51,7 @@ export default async function watermark(
   imageResized.composite(backgroundWatermark, x, y, {
     mode: Jimp.BLEND_SOURCE_OVER, // Atur mode blending untuk transparansi
     opacitySource: 0.2, // Ubah kecerahan teks agar tidak terlalu terang
+    opacityDest: 0.8,
   });
 
   return await imageResized.getBase64Async(Jimp.MIME_JPEG);
