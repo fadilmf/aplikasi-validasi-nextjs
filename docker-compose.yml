@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  validasidb:
+    image: mongo
+    ports:
+      - 27018:27017
+    volumes:
+      - validasidb:/data/db
+
+  validasi:
+    build: .
+    ports:
+      - 3001:3000
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      DB_LOCAL_URL: mongodb://validasidb:27017/aplikasi-validasi
+    depends_on:
+      - validasidb
+
+volumes:
+  validasidb:
+    external: true
