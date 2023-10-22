@@ -11,7 +11,7 @@ export default function ValidPage() {
   const router = useRouter();
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
-  const [locationPermission, setLocationPermission] = useState(false);
+  const [locationPermission, setLocationPermission] = useState(true);
   const [images, setImages] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
