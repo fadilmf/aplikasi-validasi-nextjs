@@ -65,7 +65,8 @@ export default function ValidPage() {
   const getLocation = () => {
     if ("geolocation" in navigator) {
       navigator.permissions.query({ name: "geolocation" }).then((result) => {
-        if (result.state === "granted") {
+        console.log(result);
+        if (result.state !== "denied") {
           setLocationPermission(true);
           setLoading(true);
           navigator.geolocation.getCurrentPosition(
@@ -84,9 +85,6 @@ export default function ValidPage() {
               }
             }
           );
-        } else if (result.state === "prompt") {
-          // Izin belum dikonfirmasi
-          setLocationPermission(false);
         } else {
           // Izin ditolak
           setLocationPermission(false);
@@ -98,7 +96,7 @@ export default function ValidPage() {
   };
 
   useEffect(() => {
-    getLocation();
+    // getLocation();
 
     const updateDate = () => {
       setDate(dateTime());
@@ -119,7 +117,9 @@ export default function ValidPage() {
       },
       (error) => {
         if (error.code === 1) {
+          setLocationPermission(false);
           alert("Aktifkan izin akses lokasi untuk validasi perangkat.");
+          setLoading(false);
         }
       }
     );
