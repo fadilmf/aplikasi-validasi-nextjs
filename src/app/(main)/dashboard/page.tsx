@@ -36,6 +36,51 @@ export default function DashboardPage() {
     setEditId("");
   };
 
+  const handleDeleteClick = async (id: any, username: string) => {
+    const confirmation = window.confirm(
+      `Anda yakin ingin menghapus pengguna ${username}?`
+    );
+
+    if (confirmation) {
+      try {
+        const res = await fetch(`/api/admin/edit-user`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            id,
+          }),
+        });
+
+        if (res.ok) {
+          setSuccessMessage(`User ${username} telah dihapus.`);
+          setErrorMessage("");
+
+          refreshUserList();
+        } else {
+          const data = await res.json();
+          setSuccessMessage("");
+          setErrorMessage(data.message);
+        }
+      } catch (error) {
+        console.error("Error during user deletion:", error);
+        setErrorMessage("Terjadi kesalahan saat mengirim permintaan.");
+        setSuccessMessage("");
+      }
+    }
+  };
+
+  const refreshUserList = async () => {
+    try {
+      const newUsers = await fetchUsers();
+      setUsers(newUsers);
+    } catch (error) {
+      console.error("Error refreshing user list:", error);
+    }
+  };
+
   const handleUpdate = async () => {
     try {
       const res = await fetch(`/api/admin/edit-user`, {
@@ -56,6 +101,8 @@ export default function DashboardPage() {
         setEditId("");
         setSuccessMessage("User berhasil terupdate");
         setErrorMessage("");
+
+        refreshUserList();
       } else {
         const data = await res.json();
         setSuccessMessage("");
@@ -210,7 +257,12 @@ export default function DashboardPage() {
                         >
                           <MdEdit className="text-green-500 text-xl" />
                         </button>
-                        <button className="bg-gray-100 hover:bg-gray-200 rounded-full p-2">
+                        <button
+                          onClick={() =>
+                            handleDeleteClick(user._id, user.username)
+                          }
+                          className="bg-gray-100 hover:bg-gray-200 rounded-full p-2"
+                        >
                           <MdDelete className="text-red-500 text-xl" />
                         </button>
                       </td>
