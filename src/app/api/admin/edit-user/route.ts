@@ -9,7 +9,7 @@ interface UpdateUser {
   role: string;
 }
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
     const { username, password, regional, role, editId } = await req.json();
