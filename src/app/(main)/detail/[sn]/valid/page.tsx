@@ -132,7 +132,6 @@ export default function ValidPage() {
   const fetchLocation = async (lat: Number, lon: Number) => {
     const res = await fetch("/api/location?lat=" + lat + "&lon=" + lon);
     const location = await res.json();
-    console.log("ini location", location);
     return location.data.display_name;
   };
 
@@ -219,7 +218,7 @@ export default function ValidPage() {
                     accept="image/*"
                     onChange={handleImage}
                     multiple
-                    capture
+                    capture="environment"
                     hidden
                   />
                   <div className="text-center w-full cursor-pointer">

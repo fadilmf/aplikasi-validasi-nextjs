@@ -5,6 +5,7 @@ interface User {
   username: string;
   password: string;
   regional: number;
+  witel: string;
   role: string;
 }
 

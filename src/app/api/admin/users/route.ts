@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { username, password, regional, role } = await req.json();
+    const { username, password, regional, witel, role } = await req.json();
     await connectMongoDB();
 
     const user = await User.findOne({ username }).select("_id");
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       username,
       password: hashedPassword,
       regional,
+      witel,
       role,
     });
     return NextResponse.json(

@@ -71,7 +71,8 @@ export async function POST(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        message: "An error occured while updating device.",
+        // message: "An error occured while updating device.",
+        message: String(error),
       },
       {
         status: 500,

@@ -42,6 +42,49 @@ export default function Home() {
             Halo, <span className="font-bold">{session?.user?.username}</span>!
             Berikut adalah informasi perangkat:
           </p>
+
+          <div className="flex space-x-4 mb-4">
+            {/* Dropdown Regional */}
+            <div>
+              <label htmlFor="regional" className="text-gray-600 block">
+                Regional:
+              </label>
+              <select
+                id="regional"
+                name="regional"
+                className="p-2 border rounded"
+              >
+                <option value="Semua Regional">Semua Regional</option>
+                <option value="Regional 1">Regional 1</option>
+                <option value="Regional 2">Regional 2</option>
+                <option value="Regional 3">Regional 3</option>
+                <option value="Regional 4">Regional 4</option>
+                {/* Tambahkan pilihan Regional 5 hingga 8 di sini */}
+              </select>
+            </div>
+
+            {/* Dropdown Witel */}
+            <div>
+              <label htmlFor="witel" className="text-gray-600 block">
+                Witel:
+              </label>
+              <select id="witel" name="witel" className="p-2 border rounded">
+                <option value="">All Witel</option>
+                <option value="">Aceh</option>
+                <option value="">Medan</option>
+                <option value="">Siantar</option>
+                <option value="">Batam</option>
+                <option value="">Palembang</option>
+                <option value="">Jambi</option>
+                <option value="">Padang</option>
+                <option value="">Pekanbaru</option>
+                <option value="">Lampung</option>
+                <option value="">Bengkulu</option>
+                <option value="">Babel</option>
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {/* Card Perangkat Aktif */}
             <Link

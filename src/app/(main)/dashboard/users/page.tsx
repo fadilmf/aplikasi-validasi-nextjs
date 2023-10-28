@@ -6,6 +6,7 @@ export default function UserPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [regional, setRegional] = useState(0);
+  const [witel, setWitel] = useState("");
   const [role, setRole] = useState("user");
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -24,6 +25,7 @@ export default function UserPage() {
           username,
           password,
           regional,
+          witel,
           role,
         }),
       });
@@ -96,6 +98,29 @@ export default function UserPage() {
               <option value={2}>Regional 2</option>
               <option value={3}>Regional 3</option>
               <option value={4}>Regional 4</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Witel:</label>
+            <select
+              name="witel"
+              value={witel}
+              onChange={(e) => setWitel(e.target.value)}
+              className="mt-1 p-2 border rounded w-full"
+              required
+            >
+              <option value="all">All Witel</option>
+              <option value="aceh">Aceh</option>
+              <option value="medan">Medan</option>
+              <option value="siantar">Siantar</option>
+              <option value="batam">Batam</option>
+              <option value="palembang">Palembang</option>
+              <option value="jambi">Jambi</option>
+              <option value="padang">Padang</option>
+              <option value="pekanbaru">Pekanbaru</option>
+              <option value="lampung">Lampung</option>
+              <option value="bengkulu">Bengkulu</option>
+              <option value="babel">Babel</option>
             </select>
           </div>
           <div className="mb-4">

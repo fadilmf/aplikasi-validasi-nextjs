@@ -22,8 +22,23 @@ export default function dateTime(date?: Date) {
   const year = currentDateTime.getFullYear();
   const currentTime = currentDateTime.toLocaleTimeString();
 
+  let hours = currentDateTime.getHours();
+  const minutes = currentDateTime.getMinutes();
+
+  // Menentukan AM atau PM
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  // Ubah ke format 12
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+
+  const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}
+    ${ampm}`;
+
   const formattedDatetime =
-    day + " " + monthNames[monthIndex] + " " + year + ", " + currentTime;
+    day + " " + monthNames[monthIndex] + " " + year + ", " + formattedTime;
 
   return formattedDatetime;
 }

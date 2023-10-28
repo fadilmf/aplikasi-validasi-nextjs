@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import User from "@/types/User";
 import { getServerSession } from "next-auth";
 import { useEffect, useState } from "react";
-import { MdClose, MdDelete, MdDone, MdEdit } from "react-icons/md";
+import { MdClose, MdDelete, MdDone, MdEdit, MdRefresh } from "react-icons/md";
 
 export default function DashboardPage() {
   // const [isUser, setIsUser] = useState(false);
@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [regional, setRegional] = useState(0);
+  const [witel, setWitel] = useState("");
   const [role, setRole] = useState("user");
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -155,6 +156,16 @@ export default function DashboardPage() {
               {successMessage}
             </div>
           )}
+
+          <div className="flex justify-end">
+            <button
+              className="flex justify-center items-center gap-2 border rounded-lg p-2 hover:bg-gray-100"
+              onClick={refreshUserList}
+            >
+              <MdRefresh />
+              Refresh
+            </button>
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
@@ -167,6 +178,9 @@ export default function DashboardPage() {
                   </th>
                   <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                     Regional
+                  </th>
+                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                    Witel
                   </th>
                   <th className="px-6 py-3 bg-gray-50 border-b border-gray-300"></th>
                 </tr>
@@ -198,6 +212,20 @@ export default function DashboardPage() {
                         >
                           <option value="user">User</option>
                           <option value="admin">Admin</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                        <select
+                          name="regional"
+                          value={regional}
+                          className="mt-1 p-2 border rounded w-full"
+                          onChange={(e) => setRegional(Number(e.target.value))}
+                        >
+                          <option value={0}>All Regional</option>
+                          <option value={1}>Regional 1</option>
+                          <option value={2}>Regional 2</option>
+                          <option value={3}>Regional 3</option>
+                          <option value={4}>Regional 4</option>
                         </select>
                       </td>
                       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
@@ -248,6 +276,11 @@ export default function DashboardPage() {
                       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
                         <div className="text-sm leading-5 text-gray-900">
                           {user.regional}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                        <div className="text-sm leading-5 text-gray-900">
+                          {user.witel}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-300 text-sm leading-5 font-medium flex gap-2">

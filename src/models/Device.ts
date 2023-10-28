@@ -31,6 +31,10 @@ const deviceSchema = new Schema(
       type: Number,
       required: true,
     },
+    witel: {
+      type: String,
+      required: true,
+    },
     use: {
       type: Number,
       required: true,
