@@ -11,6 +11,7 @@ export default function DevicePage() {
   const [jenis, setJenis] = useState("");
   const [nama, setNama] = useState("");
   const [regional, setRegional] = useState(0);
+  const [witel, setWitel] = useState("");
   const [use, setUse] = useState(0);
   const [nik, setNik] = useState(0);
   const [telp, setTelp] = useState(0);
@@ -60,11 +61,13 @@ export default function DevicePage() {
         },
         body: JSON.stringify({
           sn,
+          merk,
           csm,
           perangkat,
           jenis,
           nama,
           regional,
+          witel,
           use,
           nik,
           telp: "62" + telp,
@@ -216,6 +219,36 @@ export default function DevicePage() {
                 className="mt-1 p-2 border rounded w-full"
                 required
               />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Witel:</label>
+              <select
+                name="witel"
+                value={witel}
+                className="mt-1 p-2 border rounded w-full"
+                onChange={(e) => setWitel(e.target.value)}
+              >
+                <option value="all">All Witel</option>
+                <option value="aceh">Aceh</option>
+                <option value="medan">Medan</option>
+                <option value="siantar">Siantar</option>
+                <option value="batam">Batam</option>
+                <option value="palembang">Palembang</option>
+                <option value="jambi">Jambi</option>
+                <option value="padang">Padang</option>
+                <option value="pekanbaru">Pekanbaru</option>
+                <option value="lampung">Lampung</option>
+                <option value="bengkulu">Bengkulu</option>
+                <option value="babel">Babel</option>
+              </select>
+              {/* <input
+                type="text"
+                name="witel"
+                value={witel}
+                onChange={(e) => setWitel(e.target.value)}
+                className="mt-1 p-2 border rounded w-full"
+                required
+              /> */}
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Device Use:</label>

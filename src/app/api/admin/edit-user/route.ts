@@ -7,13 +7,15 @@ interface UpdateUser {
   username: string;
   password?: string;
   regional: string;
+  witel: string;
   role: string;
 }
 
 export async function POST(req: NextRequest) {
   try {
     await connectMongoDB();
-    const { username, password, regional, role, editId } = await req.json();
+    const { username, password, regional, witel, role, editId } =
+      await req.json();
 
     // const updatedUser = await User.findByIdAndUpdate(editId, {
     //   username,
@@ -25,6 +27,7 @@ export async function POST(req: NextRequest) {
     const updatedData: UpdateUser = {
       username,
       regional,
+      witel,
       role,
     };
 

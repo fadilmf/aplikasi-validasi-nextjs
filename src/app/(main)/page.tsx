@@ -12,25 +12,46 @@ export default function Home() {
   const [invalidDevices, setInvalidDevices] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const fetchDevices = async () => {
-    const res = await fetch("/api/devices?homeCount=true");
-    const devices = await res.json();
-    return devices.devices;
+  const [regional, setRegional] = useState(0);
+  const [witel, setWitel] = useState("all");
+
+  const fetchDevices = async (reg?: number, wit?: string) => {
+    console.log("reg: ", reg);
+    console.log("wit: ", wit);
+    let url = "/api/devices?homeCount=true";
+    if (reg) url += "&regional=" + reg;
+    if (wit) url += "&witel=" + wit;
+    const res = await fetch(url);
+    const json = await res.json();
+    const devices = json.devices;
+    setActiveDevices(devices.total);
+    setValidDevices(devices.valid);
+    setInvalidDevices(devices.invalid);
+    setLoading(false);
   };
+
+  const changeRegional = (reg: number) => {
+    setLoading(true);
+    setRegional(reg);
+    fetchDevices(reg, witel);
+  };
+
+  const changeWitel = (wit: string) => {
+    setLoading(true);
+    setWitel(wit);
+    fetchDevices(regional, wit);
+  };
+
+  const { data: session } = useSession();
 
   useEffect(() => {
     setLoading(true);
-    fetchDevices().then(
-      (devices: { total: number; valid: number; invalid: number }) => {
-        setActiveDevices(devices.total);
-        setValidDevices(devices.valid);
-        setInvalidDevices(devices.invalid);
-        setLoading(false);
-      }
-    );
-  }, []);
-
-  const { data: session } = useSession();
+    if (session) {
+      setRegional(session!!.user.regional);
+    }
+    console.log(session);
+    fetchDevices();
+  }, [session]);
 
   if (loading) return <Loading loading={loading} />;
   else
@@ -52,14 +73,22 @@ export default function Home() {
               <select
                 id="regional"
                 name="regional"
+                value={regional}
+                onChange={(e) => {
+                  changeRegional(Number(e.target.value));
+                }}
                 className="p-2 border rounded"
+                disabled={session?.user?.regional !== 0}
               >
-                <option value="Semua Regional">Semua Regional</option>
-                <option value="Regional 1">Regional 1</option>
-                <option value="Regional 2">Regional 2</option>
-                <option value="Regional 3">Regional 3</option>
-                <option value="Regional 4">Regional 4</option>
-                {/* Tambahkan pilihan Regional 5 hingga 8 di sini */}
+                <option value={0}>Semua Regional</option>
+                <option value={1}>Regional 1</option>
+                <option value={2}>Regional 2</option>
+                <option value={3}>Regional 3</option>
+                <option value={4}>Regional 4</option>
+                <option value={5}>Regional 5</option>
+                <option value={6}>Regional 6</option>
+                <option value={7}>Regional 7</option>
+                <option value={8}>Regional 8</option>
               </select>
             </div>
 
@@ -68,19 +97,25 @@ export default function Home() {
               <label htmlFor="witel" className="text-gray-600 block">
                 Witel:
               </label>
-              <select id="witel" name="witel" className="p-2 border rounded">
-                <option value="">All Witel</option>
-                <option value="">Aceh</option>
-                <option value="">Medan</option>
-                <option value="">Siantar</option>
-                <option value="">Batam</option>
-                <option value="">Palembang</option>
-                <option value="">Jambi</option>
-                <option value="">Padang</option>
-                <option value="">Pekanbaru</option>
-                <option value="">Lampung</option>
-                <option value="">Bengkulu</option>
-                <option value="">Babel</option>
+              <select
+                id="witel"
+                name="witel"
+                className="p-2 border rounded"
+                value={witel}
+                onChange={(e) => changeWitel(e.target.value)}
+              >
+                <option value="all">All Witel</option>
+                <option value="aceh">Aceh</option>
+                <option value="medan">Medan</option>
+                <option value="siantar">Siantar</option>
+                <option value="batam">Batam</option>
+                <option value="palembang">Palembang</option>
+                <option value="jambi">Jambi</option>
+                <option value="padang">Padang</option>
+                <option value="pekanbaru">Pekanbaru</option>
+                <option value="lampung">Lampung</option>
+                <option value="bengkulu">Bengkulu</option>
+                <option value="babel">Babel</option>
               </select>
             </div>
           </div>
@@ -88,7 +123,11 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {/* Card Perangkat Aktif */}
             <Link
-              href={"/validasi"}
+              href={
+                "/validasi?" +
+                `&regional=${regional ? regional : "0"}` +
+                `&witel=${witel ? witel : "all"}`
+              }
               className="bg-blue-100 p-4 rounded-lg flex items-center hover:scale-95 transition-transform"
             >
               <Image
@@ -107,7 +146,11 @@ export default function Home() {
             </Link>
             {/* Card Perangkat Valid */}
             <Link
-              href={"/validasi?isValid=true"}
+              href={
+                "/validasi?isValid=true" +
+                `&regional=${regional ? regional : "0"}` +
+                `&witel=${witel ? witel : "all"}`
+              }
               className="bg-green-100 p-4 rounded-lg flex items-center hover:scale-95 transition-transform"
             >
               <Image
@@ -126,7 +169,11 @@ export default function Home() {
             </Link>
             {/* Card Perangkat Tidak Valid */}
             <Link
-              href={"/validasi?isValid=false"}
+              href={
+                "/validasi?isValid=false" +
+                `&regional=${regional ? regional : "0"}` +
+                `&witel=${witel ? witel : "all"}`
+              }
               className="bg-red-100 p-4 rounded-lg flex items-center hover:scale-95 transition-transform"
             >
               <Image

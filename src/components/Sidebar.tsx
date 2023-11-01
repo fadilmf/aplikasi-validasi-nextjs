@@ -13,10 +13,16 @@ import {
 
 const menuItems = [
   { id: 1, label: "Dashboard", icon: MdDashboard, link: "/dashboard" },
-  { id: 2, label: "Users", icon: MdPersonAdd, link: "/dashboard/users" },
-  { id: 3, label: "Devices", icon: MdDevices, link: "/dashboard/devices" },
+  { id: 2, label: "Add User", icon: MdPersonAdd, link: "/dashboard/users" },
   {
-    id: 4,
+    id: 3,
+    label: "Add Supervisor",
+    icon: MdPersonAdd,
+    link: "/dashboard/supervisors",
+  },
+  { id: 4, label: "Add Device", icon: MdDevices, link: "/dashboard/devices" },
+  {
+    id: 5,
     label: "Admin Settings",
     icon: MdSettings,
     link: "/dashboard/settings",

@@ -101,6 +101,8 @@ export default function Detail() {
                 <p>{device[0]?.jenis}</p>
                 <p>Regional:</p>
                 <p>{device[0]?.regional}</p>
+                <p>Witel:</p>
+                <p className="capitalize">{device[0]?.witel}</p>
                 <p>Use:</p>
                 <p>{device[0]?.use}</p>
                 <p>NIK:</p>

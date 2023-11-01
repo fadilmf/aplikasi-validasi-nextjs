@@ -16,17 +16,22 @@ export default function Search() {
 
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
+  const [regional, setRegional] = useState(0);
+  const [witel, setWitel] = useState("all");
+
   // const router = useRouter();
 
   const params = useSearchParams();
   const status = params.get("isValid");
+  const regionalParams = params.get("regional");
+  const witelParams = params.get("witel");
 
   const handleFilterClick = () => {
     setIsFilterMenuOpen(!isFilterMenuOpen);
   };
 
   const handleSearch = async () => {
-    const devices = await fetchDevices(searchTerm);
+    const devices = await fetchDevices(searchTerm, regional, witel);
     console.log("devices", devices);
     setDevicesList(devices.devices);
   };
@@ -45,23 +50,46 @@ export default function Search() {
     });
   };
 
-  const fetchDevices = async (search?: string) => {
+  const fetchDevices = async (search?: string, reg?: number, wit?: string) => {
     const res = await fetch(
       `/api/devices?page=${page}${status ? "&isValid=" + status : ""}${
         search ? "&search=" + search : ""
+      }${reg && reg != 0 ? "&regional=" + reg : ""}${
+        wit ? "&witel=" + wit : ""
       }`
     );
     const data = await res.json();
+    setPageCount(data.pagination.pageCount);
     return data;
+  };
+
+  const changeRegional = async (reg: number) => {
+    setLoading(true);
+    setRegional(reg);
+    const devices = await fetchDevices(searchTerm, reg, witel);
+    setDevicesList(devices.devices);
+    setLoading(false);
+  };
+
+  const changeWitel = async (wit: string) => {
+    setLoading(true);
+    setWitel(wit);
+    const devices = await fetchDevices(searchTerm, regional, wit);
+    setDevicesList(devices.devices);
+    setLoading(false);
   };
 
   useEffect(() => {
     setLoading(true);
-    fetchDevices().then((data) => {
-      setDevicesList(data.devices);
-      setLoading(false);
-      setPageCount(data.pagination.pageCount);
-    });
+    setRegional(Number(regionalParams));
+    setWitel(witelParams ? witelParams : "all");
+    fetchDevices(undefined, Number(regionalParams), witelParams!!).then(
+      (data) => {
+        setDevicesList(data.devices);
+        setLoading(false);
+        setPageCount(data.pagination.pageCount);
+      }
+    );
   }, [page]);
 
   if (loading) return <Loading loading={loading} />;
@@ -96,7 +124,7 @@ export default function Search() {
           </div>
 
           {isFilterMenuOpen && (
-            <div className="mt-2 p-4 bg-white rounded shadow-lg border border-gray-300">
+            <div className="mt-2 p-4 bg-white rounded border border-gray-300">
               <div className="flex space-x-4">
                 <div>
                   <label htmlFor="regional" className="text-gray-600 block">
@@ -105,14 +133,19 @@ export default function Search() {
                   <select
                     id="regional"
                     name="regional"
+                    value={regional}
+                    onChange={(e) => changeRegional(Number(e.target.value))}
                     className="p-2 border rounded w-36"
                   >
-                    <option value="Semua Regional">Semua Regional</option>
-                    <option value="Regional 1">Regional 1</option>
-                    <option value="Regional 2">Regional 2</option>
-                    <option value="Regional 3">Regional 3</option>
-                    <option value="Regional 4">Regional 4</option>
-                    {/* Tambahkan pilihan Regional 5 hingga 8 di sini */}
+                    <option value={0}>Semua Regional</option>
+                    <option value={1}>Regional 1</option>
+                    <option value={2}>Regional 2</option>
+                    <option value={3}>Regional 3</option>
+                    <option value={4}>Regional 4</option>
+                    <option value={5}>Regional 5</option>
+                    <option value={6}>Regional 6</option>
+                    <option value={7}>Regional 7</option>
+                    <option value={8}>Regional 8</option>
                   </select>
                 </div>
                 <div>
@@ -122,20 +155,24 @@ export default function Search() {
                   <select
                     id="witel"
                     name="witel"
+                    value={witel}
+                    onChange={(e) => changeWitel(e.target.value)}
                     className="p-2 border rounded w-36"
                   >
-                    <option value="Semua Witel">Semua Witel</option>
-                    {/* Tambahkan pilihan Witel sesuai kebutuhan di sini */}
+                    <option value="all">All Witel</option>
+                    <option value="aceh">Aceh</option>
+                    <option value="medan">Medan</option>
+                    <option value="siantar">Siantar</option>
+                    <option value="batam">Batam</option>
+                    <option value="palembang">Palembang</option>
+                    <option value="jambi">Jambi</option>
+                    <option value="padang">Padang</option>
+                    <option value="pekanbaru">Pekanbaru</option>
+                    <option value="lampung">Lampung</option>
+                    <option value="bengkulu">Bengkulu</option>
+                    <option value="babel">Babel</option>
                   </select>
                 </div>
-              </div>
-              <div className="text-right mt-4">
-                <button
-                  onClick={handleSearch}
-                  className="bg-green-800 p-3 rounded text-white"
-                >
-                  Terapkan Filter
-                </button>
               </div>
             </div>
           )}
@@ -159,7 +196,7 @@ export default function Search() {
                 </li>
                 <li>
                   <button
-                    disabled={page === pageCount}
+                    disabled={page === pageCount || page > pageCount}
                     onClick={handleNext}
                     className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 "
                   >

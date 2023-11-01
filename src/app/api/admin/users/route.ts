@@ -60,7 +60,7 @@ export async function GET(req: Request) {
     console.log(error);
     return NextResponse.json(
       {
-        message: "An error occured while adding new device.",
+        message: "An error occured while fetching users.",
       },
       {
         status: 500,

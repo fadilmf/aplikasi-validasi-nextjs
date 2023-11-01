@@ -19,9 +19,17 @@ export async function GET(req: NextRequest) {
     const isValid = req.nextUrl.searchParams.get("isValid");
     const search = req.nextUrl.searchParams.get("search");
     const homeCount = req.nextUrl.searchParams.get("homeCount");
+    const regionalParam = req.nextUrl.searchParams.get("regional");
+    const witelParam = req.nextUrl.searchParams.get("witel");
 
     if (sn) query.sn = sn;
     if (regional !== 0) query.regional = regional;
+    else if (regionalParam) {
+      query.regional = Number(regionalParam);
+    }
+    if (witelParam !== "all") {
+      query.witel = witelParam;
+    }
     if (isValid) query.isValid = isValid;
     if (search) {
       if (!isNaN(Number(search)))
@@ -61,6 +69,10 @@ export async function GET(req: NextRequest) {
         ];
     }
 
+    console.log("query: ", query);
+    console.log("regionalParam: ", regionalParam);
+    console.log("witelParam: ", witelParam);
+
     if (!homeCount) {
       const ITEMS_PER_PAGE = 10;
 
@@ -70,7 +82,7 @@ export async function GET(req: NextRequest) {
       const devices = await Device.find(query).limit(ITEMS_PER_PAGE).skip(skip);
 
       console.log(devices);
-      const count = await Device.count();
+      const count = await Device.count(query);
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
         if (device.isValid && typeof device.validAt != "undefined") {
@@ -106,6 +118,12 @@ export async function GET(req: NextRequest) {
     } else {
       const query: { [k: string]: any } = {};
       if (regional !== 0) query.regional = regional;
+      else if (regionalParam) {
+        query.regional = Number(regionalParam);
+      }
+      if (witelParam && witelParam !== "all") {
+        query.witel = witelParam;
+      }
       const devices = await Device.count(query);
       query.isValid = true;
       const valid = await Device.count(query);

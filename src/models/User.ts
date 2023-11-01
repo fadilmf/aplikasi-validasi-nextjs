@@ -16,7 +16,7 @@ const userSchema = new Schema(
     },
     witel: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: String,

@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-export default function UserPage() {
+export default function SupervisorPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [regional, setRegional] = useState(1);
-  const [witel, setWitel] = useState("all");
   const [role, setRole] = useState("user");
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -24,8 +22,7 @@ export default function UserPage() {
         body: JSON.stringify({
           username,
           password,
-          regional,
-          witel,
+          regional: 0,
           role,
         }),
       });
@@ -33,12 +30,11 @@ export default function UserPage() {
       if (res.ok) {
         setUsername("");
         setPassword("");
-        setRegional(0);
         setRole("user");
         setErrorMessage("");
-        setSuccessMessage("User berhasil ditambahkan.");
+        setSuccessMessage("Supervisor berhasil ditambahkan.");
       } else {
-        console.log("User registration failed");
+        console.log("Supervisor registration failed");
         setSuccessMessage("");
         setErrorMessage((await res.json()).message);
       }
@@ -46,11 +42,10 @@ export default function UserPage() {
       console.log("Error during registration: ", error);
     }
   };
-
   return (
     <>
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-semibold mb-4">Add User</h1>
+        <h1 className="text-2xl font-semibold mb-4">Add Supervisor</h1>
         {successMessage && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md mb-4">
             {successMessage}
@@ -84,7 +79,7 @@ export default function UserPage() {
               required
             />
           </div>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block text-gray-700">Regional:</label>
             <select
               name="regional"
@@ -93,39 +88,14 @@ export default function UserPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
+              <option value={0}>All Regional</option>
               <option value={1}>Regional 1</option>
               <option value={2}>Regional 2</option>
               <option value={3}>Regional 3</option>
               <option value={4}>Regional 4</option>
-              <option value={5}>Regional 5</option>
-              <option value={6}>Regional 6</option>
-              <option value={7}>Regional 7</option>
-              <option value={8}>Regional 8</option>
             </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Witel:</label>
-            <select
-              name="witel"
-              value={witel}
-              onChange={(e) => setWitel(e.target.value)}
-              className="mt-1 p-2 border rounded w-full"
-              required
-            >
-              <option value="all">All Witel</option>
-              <option value="aceh">Aceh</option>
-              <option value="medan">Medan</option>
-              <option value="siantar">Siantar</option>
-              <option value="batam">Batam</option>
-              <option value="palembang">Palembang</option>
-              <option value="jambi">Jambi</option>
-              <option value="padang">Padang</option>
-              <option value="pekanbaru">Pekanbaru</option>
-              <option value="lampung">Lampung</option>
-              <option value="bengkulu">Bengkulu</option>
-              <option value="babel">Babel</option>
-            </select>
-          </div>
+          </div> */}
+
           <div className="mb-4">
             <label className="block text-gray-700">Role:</label>
             <select
@@ -139,24 +109,12 @@ export default function UserPage() {
               <option value="admin">Admin</option>
             </select>
           </div>
-          {/* <div className="mb-4">
-            <label className="block text-gray-700">
-              Admin:
-              <input
-                type="checkbox"
-                name="admin"
-                checked={admin}
-                onChange={(e) => setAdmin(e.target.checked)}
-                className="ml-2"
-              />
-            </label>
-          </div> */}
           <div className="mt-4">
             <button
               type="submit"
               className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full"
             >
-              Add User
+              Add Supervisor
             </button>
           </div>
         </form>

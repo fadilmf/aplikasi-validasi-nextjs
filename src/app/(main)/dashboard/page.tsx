@@ -1,6 +1,7 @@
 "use client";
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import Loading from "@/components/Loading";
 import User from "@/types/User";
 import { getServerSession } from "next-auth";
 import { useEffect, useState } from "react";
@@ -10,6 +11,8 @@ export default function DashboardPage() {
   // const [isUser, setIsUser] = useState(false);
 
   // const session = await getServerSession(authOptions);
+
+  const [loading, setLoading] = useState(true);
 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -26,10 +29,14 @@ export default function DashboardPage() {
 
   const [users, setUsers] = useState<User[]>([]);
 
+  console.log("witel: ", witel);
+  console.log("regional: ", regional);
+
   const handleEditClick = (user: any) => {
     setEditId(user._id);
     setUsername(user.username);
     setRegional(user.regional);
+    setWitel(user.witel);
     setRole(user.role);
   };
 
@@ -75,8 +82,10 @@ export default function DashboardPage() {
 
   const refreshUserList = async () => {
     try {
+      setLoading(true);
       const newUsers = await fetchUsers();
       setUsers(newUsers);
+      setLoading(false);
     } catch (error) {
       console.error("Error refreshing user list:", error);
     }
@@ -93,6 +102,7 @@ export default function DashboardPage() {
           username,
           password,
           regional,
+          witel,
           role,
           editId,
         }),
@@ -125,14 +135,17 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchUsers().then((users) => {
       setUsers(users);
+      setLoading(false);
     });
   }, []);
 
-  return (
-    <>
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-semibold mb-4">Dashboard Page</h1>
-        {/* <div className="flex justify-center gap-2 mb-4">
+  if (loading) return <Loading loading={loading} />;
+  else
+    return (
+      <>
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-semibold mb-4">Dashboard Page</h1>
+          {/* <div className="flex justify-center gap-2 mb-4">
           <button
             onClick={() => setIsUser(false)}
             className={`px-4 py-2 rounded-full text-white w-full ${
@@ -150,163 +163,183 @@ export default function DashboardPage() {
             Manage Users
           </button>
         </div> */}
-        <div className="container mx-auto p-4">
-          {successMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md mb-4">
-              {successMessage}
-            </div>
-          )}
+          <div className="container mx-auto p-4">
+            {successMessage && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md mb-4">
+                {successMessage}
+              </div>
+            )}
 
-          <div className="flex justify-end">
-            <button
-              className="flex justify-center items-center gap-2 border rounded-lg p-2 hover:bg-gray-100"
-              onClick={refreshUserList}
-            >
-              <MdRefresh />
-              Refresh
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Username
-                  </th>
-                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Regional
-                  </th>
-                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Witel
-                  </th>
-                  <th className="px-6 py-3 bg-gray-50 border-b border-gray-300"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) =>
-                  String(user._id) === editId ? (
-                    <tr key={String(user._id)} className="bg-blue-100">
-                      <td className="border-b border-gray-300">
-                        <input
-                          type="text"
-                          className="w-full p-2 border rounded"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <input
-                          type="password"
-                          className="w-full p-2 border rounded"
-                          placeholder="Enter new password"
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                      </td>
-                      <td className="border-b border-gray-300">
-                        <select
-                          name="role"
-                          value={role}
-                          className="mt-1 p-2 border rounded w-full"
-                          onChange={(e) => setRole(e.target.value)}
-                        >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <select
-                          name="regional"
-                          value={regional}
-                          className="mt-1 p-2 border rounded w-full"
-                          onChange={(e) => setRegional(Number(e.target.value))}
-                        >
-                          <option value={0}>All Regional</option>
-                          <option value={1}>Regional 1</option>
-                          <option value={2}>Regional 2</option>
-                          <option value={3}>Regional 3</option>
-                          <option value={4}>Regional 4</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <select
-                          name="regional"
-                          value={regional}
-                          className="mt-1 p-2 border rounded w-full"
-                          onChange={(e) => setRegional(Number(e.target.value))}
-                        >
-                          <option value={0}>All Regional</option>
-                          <option value={1}>Regional 1</option>
-                          <option value={2}>Regional 2</option>
-                          <option value={3}>Regional 3</option>
-                          <option value={4}>Regional 4</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-300 text-sm leading-5 font-medium flex gap-2">
-                        <button
-                          onClick={handleUpdate}
-                          className="bg-white hover:bg-gray-100 rounded-full p-2"
-                        >
-                          <MdDone className="text-green-500 text-xl" />
-                        </button>
-                        <button
-                          onClick={() => handleCancelEditClick()}
-                          className="bg-white hover:bg-gray-100 rounded-full p-2"
-                        >
-                          <MdClose className="text-red-500 text-xl" />
-                        </button>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr key={String(user._id)}>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <div className="flex items-center">
-                          <div className="ml-4">
-                            <div className="text-sm leading-5 font-medium text-gray-900">
-                              {user.username}
+            <div className="flex justify-end">
+              <button
+                className="flex justify-center items-center gap-2 border rounded-lg p-2 hover:bg-gray-100"
+                onClick={refreshUserList}
+              >
+                <MdRefresh />
+                Refresh
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      Username
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      Regional
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 border-b border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      Witel
+                    </th>
+                    <th className="px-6 py-3 bg-gray-50 border-b border-gray-300"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) =>
+                    String(user._id) === editId ? (
+                      <tr key={String(user._id)} className="bg-gray-100">
+                        <td className="flex flex-col p-5 border-b border-gray-300">
+                          <h1 className="font-medium">
+                            Updating User{" "}
+                            <span className="font-bold">{username}</span>
+                          </h1>
+                          <label htmlFor="">Username</label>
+                          <input
+                            type="text"
+                            className="p-2 border rounded"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                          />
+                          <label htmlFor="">Password</label>
+                          <input
+                            type="password"
+                            className="p-2 border rounded"
+                            placeholder="Enter new password"
+                            onChange={(e) => setPassword(e.target.value)}
+                          />
+                        </td>
+                        <td className="border-b border-gray-300">
+                          <select
+                            name="role"
+                            value={role}
+                            className="mt-1 p-2 border rounded w-full"
+                            onChange={(e) => setRole(e.target.value)}
+                          >
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 border-b border-gray-300">
+                          <select
+                            name="regional"
+                            value={regional}
+                            className="mt-1 p-2 border rounded w-full"
+                            onChange={(e) =>
+                              setRegional(Number(e.target.value))
+                            }
+                          >
+                            <option value={0}>All Regional</option>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                            <option value={6}>6</option>
+                            <option value={7}>7</option>
+                            <option value={8}>8</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 border-b border-gray-300">
+                          <select
+                            name="witel"
+                            value={witel}
+                            className="mt-1 p-2 border rounded w-full"
+                            onChange={(e) => setWitel(e.target.value)}
+                          >
+                            <option value="all">All Witel</option>
+                            <option value="aceh">Aceh</option>
+                            <option value="medan">Medan</option>
+                            <option value="siantar">Siantar</option>
+                            <option value="batam">Batam</option>
+                            <option value="palembang">Palembang</option>
+                            <option value="jambi">Jambi</option>
+                            <option value="padang">Padang</option>
+                            <option value="pekanbaru">Pekanbaru</option>
+                            <option value="lampung">Lampung</option>
+                            <option value="bengkulu">Bengkulu</option>
+                            <option value="babel">Babel</option>
+                          </select>
+                        </td>
+
+                        <td className="px-6 py-4 border-b border-gray-300 font-medium flex gap-2">
+                          <button
+                            onClick={handleUpdate}
+                            className="bg-white hover:bg-gray-100 rounded-full p-2"
+                          >
+                            <MdDone className="text-green-500 text-xl" />
+                          </button>
+                          <button
+                            onClick={() => handleCancelEditClick()}
+                            className="bg-white hover:bg-gray-100 rounded-full p-2"
+                          >
+                            <MdClose className="text-red-500 text-xl" />
+                          </button>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={String(user._id)}>
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                          <div className="flex items-center">
+                            <div className="ml-4">
+                              <div className="text-sm leading-5 font-medium text-gray-900">
+                                {user.username}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <div className="text-sm leading-5 text-gray-900">
-                          {user.role}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <div className="text-sm leading-5 text-gray-900">
-                          {user.regional}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                        <div className="text-sm leading-5 text-gray-900">
-                          {user.witel}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-300 text-sm leading-5 font-medium flex gap-2">
-                        <button
-                          onClick={() => handleEditClick(user)}
-                          className="bg-gray-100 hover:bg-gray-200 rounded-full p-2"
-                        >
-                          <MdEdit className="text-green-500 text-xl" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleDeleteClick(user._id, user.username)
-                          }
-                          className="bg-gray-100 hover:bg-gray-200 rounded-full p-2"
-                        >
-                          <MdDelete className="text-red-500 text-xl" />
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
+                        </td>
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                          <div className="text-sm leading-5 text-gray-900">
+                            {user.role}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                          <div className="text-sm leading-5 text-gray-900">
+                            {user.regional}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                          <div className="text-sm leading-5 text-gray-900">
+                            {user.witel}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-300 text-sm leading-5 font-medium flex gap-2">
+                          <button
+                            onClick={() => handleEditClick(user)}
+                            className="bg-gray-100 hover:bg-gray-200 rounded-full p-2"
+                          >
+                            <MdEdit className="text-green-500 text-xl" />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteClick(user._id, user.username)
+                            }
+                            className="bg-gray-100 hover:bg-gray-200 rounded-full p-2"
+                          >
+                            <MdDelete className="text-red-500 text-xl" />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
 }

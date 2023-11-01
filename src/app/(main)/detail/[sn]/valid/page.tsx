@@ -44,6 +44,7 @@ export default function ValidPage() {
     console.log("handleImage", file);
     const fileReader = new FileReader();
     fileReader.onload = function (e) {
+      console.log("image added");
       const image = e.target?.result as string;
       const newImages = images;
       newImages.push(image);
