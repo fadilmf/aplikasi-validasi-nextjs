@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const router = useRouter();
@@ -16,11 +16,14 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       const res = await signIn("credentials", {
         username,
         password,
         redirect: false,
       });
+
+      setIsLoading(false);
 
       if (res?.error) {
         setError("Invalid credentials");
@@ -73,7 +76,8 @@ export default function LoginForm() {
             <div className="mb-4">
               <button
                 type="submit"
-                className="bg-green-800 hover:bg-green-900 text-white w-full py-2 px-4 rounded-full"
+                className="bg-green-800 hover:bg-green-900 text-white w-full py-2 px-4 rounded-full disabled:opacity-25 transition-opacity"
+                disabled={isLoading}
               >
                 Login
               </button>
