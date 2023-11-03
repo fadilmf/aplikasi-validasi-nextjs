@@ -1,10 +1,12 @@
 "use client";
 
 import Loading from "@/components/Loading";
+import { downloadCsv } from "@/util/downloadCsv";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { MdDownload } from "react-icons/md";
 
 export default function Home() {
   const [activeDevices, setActiveDevices] = useState(0);
@@ -43,6 +45,22 @@ export default function Home() {
   };
 
   const { data: session } = useSession();
+
+  const handleExportCSV = async () => {
+    try {
+      const res = await fetch("api/admin/export-perangkat-aktif");
+      const data = await res.json();
+      console.log("data perangkat aktif: ", data.devices);
+
+      if (data.devices) {
+        downloadCsv(data.devices, "perangkat-aktif");
+      } else {
+        console.log("data kosong");
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan saat mengambil data perangkat.", error);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -118,6 +136,16 @@ export default function Home() {
                 <option value="babel">Babel</option>
               </select>
             </div>
+          </div>
+
+          <div className="py-3">
+            <button
+              onClick={handleExportCSV}
+              className="flex gap-2 items-center bg-green-500 text-white p-2 rounded-md"
+            >
+              <MdDownload />
+              Export Data Perangkat Aktif
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import Camera from "@/components/Camera";
 import Loading from "@/components/Loading";
 import dateTime from "@/util/dateTime";
 import Image from "next/image";
@@ -17,15 +18,16 @@ export default function ValidPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
   const params = useParams();
 
   const imageElements = () => {
     const el = [];
     for (let i = 0; i < 3 - images.length; i++) {
       el.push(
-        <div>
+        <div key={i}>
           <Image
-            key={i}
             className="self-center relative"
             src="/img/img_perangkat_aktif.svg"
             alt={""}
@@ -38,35 +40,49 @@ export default function ValidPage() {
     return el;
   };
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (images.length >= 3) return;
-    const file = e.target?.files!![0];
-    console.log("handleImage", file);
-    const fileReader = new FileReader();
-    fileReader.onload = function (e) {
-      console.log("image added");
-      const image = e.target?.result as string;
-      const newImages = images;
-      newImages.push(image);
-      setImages(newImages);
-    };
-    fileReader.readAsDataURL(file);
+  // const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (images.length >= 3) return;
+  //   const file = e.target?.files!![0];
+  //   const fileReader = new FileReader();
+  //   fileReader.onload = function (e) {
+  //     const image = e.target?.result as string;
+  //     const newImages = images;
+  //     newImages.push(image);
+  //     setImages(newImages);
+  //   };
+  //   fileReader.readAsDataURL(file);
+  // };
+
+  // const handleImage = (image: string) => {
+  //   if (images.length >= 3) return;
+  //   const newImages = images;
+  //   newImages.push(image);
+  //   setImages(newImages);
+  // };
+
+  const handleAddImage = (image: string) => {
+    if (images.length >= 3) return alert("Maksimal 3 gambar");
+    setImages([...images, image]);
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    const updatedImages = images.filter((_, index) => index !== indexToRemove);
+    setImages(updatedImages);
   };
 
   const handleCancel = () => {
     window.history.back();
   };
 
-  const handleRemoveImage = (i: number) => {
-    const newImages = images;
-    newImages.splice(i, 1);
-    setImages(newImages);
-  };
+  // const handleRemoveImage = (i: number) => {
+  //   const newImages = images;
+  //   newImages.splice(i, 1);
+  //   setImages(newImages);
+  // };
 
   const getLocation = () => {
     if ("geolocation" in navigator) {
       navigator.permissions.query({ name: "geolocation" }).then((result) => {
-        console.log(result);
         if (result.state !== "denied") {
           setLocationPermission(true);
           setLoading(true);
@@ -128,7 +144,7 @@ export default function ValidPage() {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [images]);
 
   const fetchLocation = async (lat: Number, lon: Number) => {
     const res = await fetch("/api/location?lat=" + lat + "&lon=" + lon);
@@ -211,12 +227,12 @@ export default function ValidPage() {
                 <p>Lokasi:</p>
                 <p>{location}</p>
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="flex bg-green-800 py-2 px-4 rounded-full text-white mt-4">
                   <input
                     className="mt-1"
                     type="file"
-                    accept="image/*"
+                    // accept="image/*"
                     onChange={handleImage}
                     multiple
                     capture="environment"
@@ -226,7 +242,22 @@ export default function ValidPage() {
                     Ambil Gambar
                   </div>
                 </label>
+              </div> */}
+              <div className="my-4">
+                <button
+                  className="text-center w-full cursor-pointer bg-green-800 py-2 px-4 rounded-full text-white"
+                  onClick={() => setIsCameraOpen(!isCameraOpen)}
+                >
+                  {isCameraOpen ? "Tutup Kamera" : "Buka Kamera"}
+                </button>
               </div>
+              {isCameraOpen && (
+                <div className="mb-4">
+                  <div className="flex justify-center">
+                    <Camera onCapture={handleAddImage} />
+                  </div>
+                </div>
+              )}
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">
                   Notes:

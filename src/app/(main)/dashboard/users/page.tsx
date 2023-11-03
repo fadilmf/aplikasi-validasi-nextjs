@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 export default function UserPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [regional, setRegional] = useState(1);
+  const [regional, setRegional] = useState(0);
   const [witel, setWitel] = useState("all");
   const [role, setRole] = useState("user");
 
@@ -93,6 +93,7 @@ export default function UserPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
+              <option value={0}>All Regional</option>
               <option value={1}>Regional 1</option>
               <option value={2}>Regional 2</option>
               <option value={3}>Regional 3</option>

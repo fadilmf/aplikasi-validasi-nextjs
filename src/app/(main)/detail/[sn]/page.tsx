@@ -44,7 +44,7 @@ export default function Detail() {
     fetchDevices().then((devices) => {
       console.log("device", devices);
       const msSinceValid =
-        new Date().getTime() - new Date(devices[0].validAt).getTime();
+        new Date().getTime() - new Date(devices[0]?.validAt).getTime();
       setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
       setDevice(devices);
       fetchHistory().then((histories) => {

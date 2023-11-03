@@ -92,6 +92,8 @@ export default function HistoryId() {
               <p>{device[0]?.jenis}</p>
               <p>Regional:</p>
               <p>{device[0]?.regional}</p>
+              <p>Witel:</p>
+              <p>{device[0]?.witel}</p>
               <p>Use:</p>
               <p>{device[0]?.use}</p>
               <p>NIK:</p>

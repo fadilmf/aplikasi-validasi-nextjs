@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function SupervisorPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [regional, setRegional] = useState(0);
   const [role, setRole] = useState("user");
 
   const [successMessage, setSuccessMessage] = useState("");
@@ -22,7 +23,7 @@ export default function SupervisorPage() {
         body: JSON.stringify({
           username,
           password,
-          regional: 0,
+          regional,
           role,
         }),
       });
@@ -30,6 +31,7 @@ export default function SupervisorPage() {
       if (res.ok) {
         setUsername("");
         setPassword("");
+        setRegional(0);
         setRole("user");
         setErrorMessage("");
         setSuccessMessage("Supervisor berhasil ditambahkan.");
@@ -79,7 +81,7 @@ export default function SupervisorPage() {
               required
             />
           </div>
-          {/* <div className="mb-4">
+          <div className="mb-4">
             <label className="block text-gray-700">Regional:</label>
             <select
               name="regional"
@@ -94,7 +96,7 @@ export default function SupervisorPage() {
               <option value={3}>Regional 3</option>
               <option value={4}>Regional 4</option>
             </select>
-          </div> */}
+          </div>
 
           <div className="mb-4">
             <label className="block text-gray-700">Role:</label>
