@@ -10,8 +10,6 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     const regional = session?.user.regional;
 
-    console.log(regional);
-
     const query: { [k: string]: any } = {};
 
     const sn = req.nextUrl.searchParams.get("sn");
@@ -69,10 +67,6 @@ export async function GET(req: NextRequest) {
         ];
     }
 
-    console.log("query: ", query);
-    console.log("regionalParam: ", regionalParam);
-    console.log("witelParam: ", witelParam);
-
     if (!homeCount) {
       const ITEMS_PER_PAGE = 10;
 
@@ -81,7 +75,6 @@ export async function GET(req: NextRequest) {
       const newDevices = [];
       const devices = await Device.find(query).limit(ITEMS_PER_PAGE).skip(skip);
 
-      console.log(devices);
       const count = await Device.count(query);
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
@@ -89,7 +82,6 @@ export async function GET(req: NextRequest) {
           const validAt = device.validAt;
           validAt.setDate(validAt.getDate() + 30); // TODO: ambil dari database
           if (validAt <= new Date()) {
-            console.log("tidak valid");
             await Device.findOneAndUpdate(device._id, {
               isValid: false,
               validAt: null,
@@ -103,8 +95,6 @@ export async function GET(req: NextRequest) {
           newDevices.push(device);
         }
       }
-
-      console.log(newDevices);
 
       const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
 
@@ -143,7 +133,6 @@ export async function GET(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "An error occured while getting device data.",

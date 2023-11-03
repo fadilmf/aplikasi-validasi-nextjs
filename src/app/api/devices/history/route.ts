@@ -3,12 +3,24 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import History from "@/models/History";
+import Device from "@/models/Device";
 
 export async function GET(req: NextRequest) {
   try {
     await connectMongoDB();
     const session = await getServerSession(authOptions);
-    const regional = session?.user.regional;
+    const userRegional = session?.user.regional;
+
+    if (!session || !session.user) {
+      return NextResponse.json(
+        {
+          message: "Anda tidak terautentikasi.",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
 
     const sn = req.nextUrl.searchParams.get("sn");
     const id = req.nextUrl.searchParams.get("id");
@@ -26,10 +38,27 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const device = await Device.findOne({ sn });
+
+    if (!device) {
+      return NextResponse.json({
+        message: "Perangkat dengan SN tersebut tidak ditemukan.",
+      });
+    }
+
+    if (userRegional !== 0 && device.regional !== userRegional) {
+      return NextResponse.json(
+        {
+          message: "Anda tidak memiliki izin untuk mengakses perangkat ini.",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
     query.device_sn = sn;
     if (id) query._id = id;
-
-    console.log(query);
 
     const history = await History.find(query)
       .populate("user", "username")

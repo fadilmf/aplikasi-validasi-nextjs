@@ -18,8 +18,6 @@ export default function Home() {
   const [witel, setWitel] = useState("all");
 
   const fetchDevices = async (reg?: number, wit?: string) => {
-    console.log("reg: ", reg);
-    console.log("wit: ", wit);
     let url = "/api/devices?homeCount=true";
     if (reg) url += "&regional=" + reg;
     if (wit) url += "&witel=" + wit;
@@ -50,12 +48,9 @@ export default function Home() {
     try {
       const res = await fetch("api/admin/export-perangkat-aktif");
       const data = await res.json();
-      console.log("data perangkat aktif: ", data.devices);
 
       if (data.devices) {
         downloadCsv(data.devices, "perangkat-aktif");
-      } else {
-        console.log("data kosong");
       }
     } catch (error) {
       console.error("Terjadi kesalahan saat mengambil data perangkat.", error);
@@ -67,7 +62,6 @@ export default function Home() {
     if (session) {
       setRegional(session!!.user.regional);
     }
-    console.log(session);
     fetchDevices();
   }, [session]);
 

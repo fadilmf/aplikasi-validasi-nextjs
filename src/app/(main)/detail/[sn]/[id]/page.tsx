@@ -13,11 +13,6 @@ export default function HistoryId() {
   const [histories, setHistories] = useState<History[]>([]);
 
   const params = useParams();
-  console.log(params);
-
-  // const handleUpdateClick = () => {
-  //   setShowButtons(!showButtons);
-  // };
 
   const goBack = () => {
     window.history.back();
@@ -45,8 +40,6 @@ export default function HistoryId() {
     fetchHistory().then((histories) => {
       setHistories(histories);
     });
-
-    console.log("ini notes: ", histories[0]?.notes);
   }, []);
 
   return (

@@ -44,7 +44,6 @@ export async function POST(req: Request) {
           location: data.location,
         }
       );
-      console.log(base64);
       images.push(Buffer.from(base64, "base64"));
     }
 
@@ -68,7 +67,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Device changed to valid" });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         // message: "An error occured while updating device.",

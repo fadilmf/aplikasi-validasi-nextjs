@@ -11,9 +11,6 @@ export default async function watermark(
   const imageWidth = imageResized.getWidth();
   const imageHeight = imageResized.getHeight();
 
-  console.log(imageWidth);
-  console.log(imageHeight);
-
   const textWidth = 500; // Lebar latar belakang teks
   const textHeight = 500; // Tinggi latar belakang teks
   const backgroundColor = 0x000000ff; // Warna latar belakang (hitam)

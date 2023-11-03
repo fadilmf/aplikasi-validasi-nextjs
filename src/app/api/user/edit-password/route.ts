@@ -14,9 +14,6 @@ export async function POST(req: NextRequest) {
 
     const { currentPassword, newPassword } = await req.json();
 
-    console.log("currentPassword server: ", currentPassword);
-    console.log("newPassword server: ", newPassword);
-
     if (!user || !currentPassword || !newPassword) {
       return NextResponse.json(
         { message: "Missing user or password data." },

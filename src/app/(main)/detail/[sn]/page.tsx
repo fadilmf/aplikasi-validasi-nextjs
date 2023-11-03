@@ -10,14 +10,16 @@ import { useEffect, useState } from "react";
 
 export default function Detail() {
   const [showButtons, setShowButtons] = useState(false);
-  const [device, setDevice] = useState<any[]>([]);
+  // const [device, setDevice] = useState<any[]>([]);
+  const [device, setDevice] = useState<any>();
   const [images, setImages] = useState<string[]>([]);
   const [histories, setHistories] = useState<History[]>([]);
   const [daysSinceValid, setDaysSinceValid] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [errorPageMessage, setErrorPageMessage] = useState("");
+
   const params = useParams();
-  console.log(params);
 
   const handleUpdateClick = () => {
     setShowButtons(!showButtons);
@@ -34,28 +36,35 @@ export default function Detail() {
   };
 
   const fetchDevices = async () => {
-    const res = await fetch("/api/devices?sn=" + params.sn);
-    const devices = await res.json();
-    return devices.devices;
+    const res = await fetch("/api/devices/detail?sn=" + params.sn);
+    const data = await res.json();
+    if (data.status != 200) {
+      setErrorPageMessage(data.message);
+    }
+    return data.device;
   };
 
   useEffect(() => {
     setLoading(true);
     fetchDevices().then((devices) => {
-      console.log("device", devices);
       const msSinceValid =
-        new Date().getTime() - new Date(devices[0]?.validAt).getTime();
+        new Date().getTime() - new Date(devices?.validAt).getTime();
       setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
       setDevice(devices);
       fetchHistory().then((histories) => {
-        console.log("ini histories", histories);
         setHistories(histories);
         setLoading(false);
       });
     });
   }, []);
 
-  if (loading) return <Loading loading={loading} />;
+  if (errorPageMessage)
+    return (
+      <>
+        <h1>{errorPageMessage}</h1>
+      </>
+    );
+  else if (loading) return <Loading loading={loading} />;
   else
     return (
       <>
@@ -79,13 +88,13 @@ export default function Detail() {
                 <h1 className="text-2xl font-semibold">
                   <div>
                     SN:
-                    {device[0]?.sn}
+                    {device?.sn}
                   </div>
                 </h1>
-                <p>Merk: {device[0]?.merk}</p>
-                <p>Status: {device[0]?.isValid ? "Valid" : "Tidak Valid"}</p>
-                {device[0]?.isValid && (
-                  <p>Last Validasi: {dateTime(new Date(device[0].validAt))}</p>
+                <p>Merk: {device?.merk}</p>
+                <p>Status: {device?.isValid ? "Valid" : "Tidak Valid"}</p>
+                {device?.isValid && (
+                  <p>Last Validasi: {dateTime(new Date(device.validAt))}</p>
                 )}
               </div>
             </div>
@@ -94,23 +103,23 @@ export default function Detail() {
               <h1 className="font-semibold">Detail</h1>
               <div className="grid grid-cols-2 gap-2">
                 <p>CSM:</p>
-                <p>{device[0]?.csm}</p>
+                <p>{device?.csm}</p>
                 <p>Tipe Perangkat:</p>
-                <p>{device[0]?.perangkat}</p>
+                <p>{device?.perangkat}</p>
                 <p>Jenis Perangkat:</p>
-                <p>{device[0]?.jenis}</p>
+                <p>{device?.jenis}</p>
                 <p>Regional:</p>
-                <p>{device[0]?.regional}</p>
+                <p>{device?.regional}</p>
                 <p>Witel:</p>
-                <p className="capitalize">{device[0]?.witel}</p>
+                <p className="capitalize">{device?.witel}</p>
                 <p>Use:</p>
-                <p>{device[0]?.use}</p>
+                <p>{device?.use}</p>
                 <p>NIK:</p>
-                <p>{device[0]?.nik}</p>
+                <p>{device?.nik}</p>
                 <p>Nama:</p>
-                <p>{device[0]?.nama}</p>
+                <p>{device?.nama}</p>
                 <p>No. Telp:</p>
-                <p>{device[0]?.telp}</p>
+                <p>{device?.telp}</p>
               </div>
               {/* <div className="grid grid-cols-4 gap-2">
               <p className="col-span-1">
@@ -170,12 +179,12 @@ export default function Detail() {
               </div>
             )}
           </div>
-          {device[0]?.isValid && (
+          {device?.isValid && (
             <div className="flex justify-center text-center w-full">
               <h1>Device valid selama {daysSinceValid} hari</h1>
             </div>
           )}
-          {histories.length > 0 && (
+          {histories?.length > 0 && (
             <div className="mt-5">
               <h1 className="flex justify-center font-medium text-lg mb-3">
                 Validasi History:

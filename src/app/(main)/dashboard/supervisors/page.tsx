@@ -36,7 +36,6 @@ export default function SupervisorPage() {
         setErrorMessage("");
         setSuccessMessage("Supervisor berhasil ditambahkan.");
       } else {
-        console.log("Supervisor registration failed");
         setSuccessMessage("");
         setErrorMessage((await res.json()).message);
       }

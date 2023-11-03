@@ -27,14 +27,10 @@ export default function DevicePage() {
     const file = e.target.files!![0];
 
     Papa.parse(file, {
-      header: true, // Jika baris pertama adalah header
-      dynamicTyping: true, // Otomatis deteksi tipe data
+      header: true,
+      dynamicTyping: true,
       complete: (result) => {
-        // Hasil pemrosesan CSV
         const data = result.data;
-
-        // Lakukan sesuatu dengan data, seperti mengirimnya ke API
-        console.log("Data from CSV:", data);
 
         setCsvData(data);
       },
@@ -73,7 +69,6 @@ export default function DevicePage() {
           telp: "62" + telp,
         }),
       });
-      console.log(res.body);
 
       if (res.ok) {
         setSn(0);
@@ -89,7 +84,6 @@ export default function DevicePage() {
         setErrorMessage("");
         setSuccessMessage("Device berhasil ditambahkan.");
       } else {
-        console.log("Adding device failed");
       }
     } catch (error) {
       console.log("Error during adding device: ", error);

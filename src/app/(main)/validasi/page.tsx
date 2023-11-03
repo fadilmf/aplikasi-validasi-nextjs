@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdFilterList, MdSearch } from "react-icons/md";
 import Loading from "@/components/Loading";
+import { useSession } from "next-auth/react";
 
 export default function Search() {
   const [page, setPage] = useState(1);
@@ -18,11 +19,13 @@ export default function Search() {
 
   const [regional, setRegional] = useState(0);
   const [witel, setWitel] = useState("all");
+  const [status, setStatus] = useState("");
 
-  // const router = useRouter();
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const params = useSearchParams();
-  const status = params.get("isValid");
+  const statusParams = params.get("isValid");
   const regionalParams = params.get("regional");
   const witelParams = params.get("witel");
 
@@ -32,7 +35,6 @@ export default function Search() {
 
   const handleSearch = async () => {
     const devices = await fetchDevices(searchTerm, regional, witel);
-    console.log("devices", devices);
     setDevicesList(devices.devices);
   };
 
@@ -50,23 +52,55 @@ export default function Search() {
     });
   };
 
-  const fetchDevices = async (search?: string, reg?: number, wit?: string) => {
+  const fetchDevices = async (
+    search?: string,
+    reg?: number,
+    wit?: string,
+    stat?: string
+  ) => {
+    const queryParams = new URLSearchParams();
+
+    if (search) {
+      queryParams.append("search", search);
+    }
+    if (reg && reg !== 0) {
+      queryParams.append("regional", reg.toString());
+    }
+
+    if (wit) {
+      queryParams.append("witel", wit);
+    }
+
+    if (stat) {
+      queryParams.append("isValid", stat);
+    }
+
+    // const res = await fetch(
+    //   `/api/devices?page=${page}${status ? "&isValid=" + status : ""}${
+    //     search ? "&search=" + search : ""
+    //   }${reg && reg != 0 ? "&regional=" + reg : ""}${
+    //     wit ? "&witel=" + wit : ""
+    //   }`
+    // );
     const res = await fetch(
-      `/api/devices?page=${page}${status ? "&isValid=" + status : ""}${
-        search ? "&search=" + search : ""
-      }${reg && reg != 0 ? "&regional=" + reg : ""}${
-        wit ? "&witel=" + wit : ""
-      }`
+      `/api/devices?page=${page}&${queryParams.toString()}`
     );
     const data = await res.json();
     setPageCount(data.pagination.pageCount);
+
+    router.push("/validasi");
+    // router.replace({
+    //   pathname: router.pathname,
+    //   query: queryParams.toString()
+    // })
+
     return data;
   };
 
   const changeRegional = async (reg: number) => {
     setLoading(true);
     setRegional(reg);
-    const devices = await fetchDevices(searchTerm, reg, witel);
+    const devices = await fetchDevices(searchTerm, reg, witel, status);
     setDevicesList(devices.devices);
     setLoading(false);
   };
@@ -74,22 +108,36 @@ export default function Search() {
   const changeWitel = async (wit: string) => {
     setLoading(true);
     setWitel(wit);
-    const devices = await fetchDevices(searchTerm, regional, wit);
+    const devices = await fetchDevices(searchTerm, regional, wit, status);
+    setDevicesList(devices.devices);
+    setLoading(false);
+  };
+
+  const changeStatus = async (stat: string) => {
+    setLoading(true);
+    setStatus(stat);
+    const devices = await fetchDevices(searchTerm, regional, witel, stat);
     setDevicesList(devices.devices);
     setLoading(false);
   };
 
   useEffect(() => {
     setLoading(true);
-    setRegional(Number(regionalParams));
+    if (session) {
+      setRegional(session!!.user.regional);
+    }
+    // setRegional(Number(regionalParams));
     setWitel(witelParams ? witelParams : "all");
-    fetchDevices(undefined, Number(regionalParams), witelParams!!).then(
-      (data) => {
-        setDevicesList(data.devices);
-        setLoading(false);
-        setPageCount(data.pagination.pageCount);
-      }
-    );
+    fetchDevices(
+      undefined,
+      Number(regionalParams),
+      witelParams!!,
+      statusParams!!
+    ).then((data) => {
+      setDevicesList(data.devices);
+      setLoading(false);
+      setPageCount(data.pagination.pageCount);
+    });
   }, [page]);
 
   if (loading) return <Loading loading={loading} />;
@@ -136,6 +184,7 @@ export default function Search() {
                     value={regional}
                     onChange={(e) => changeRegional(Number(e.target.value))}
                     className="p-2 border rounded w-36"
+                    disabled={session?.user?.regional !== 0}
                   >
                     <option value={0}>Semua Regional</option>
                     <option value={1}>Regional 1</option>
@@ -171,6 +220,22 @@ export default function Search() {
                     <option value="lampung">Lampung</option>
                     <option value="bengkulu">Bengkulu</option>
                     <option value="babel">Babel</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="status" className="text-gray-600 block">
+                    Status:
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={status}
+                    onChange={(e) => changeStatus(e.target.value)}
+                    className="p-2 border rounded w-36"
+                  >
+                    <option value="">All Status</option>
+                    <option value="true">Valid</option>
+                    <option value="false">Tidak Valid</option>
                   </select>
                 </div>
               </div>

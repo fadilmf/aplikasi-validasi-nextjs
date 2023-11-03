@@ -38,7 +38,6 @@ export default function UserPage() {
         setErrorMessage("");
         setSuccessMessage("User berhasil ditambahkan.");
       } else {
-        console.log("User registration failed");
         setSuccessMessage("");
         setErrorMessage((await res.json()).message);
       }

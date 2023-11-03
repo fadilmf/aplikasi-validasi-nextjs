@@ -31,7 +31,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "Device changed to not valid" });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "An error occured while updating device.",

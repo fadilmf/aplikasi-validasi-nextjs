@@ -29,9 +29,6 @@ export default function DashboardPage() {
 
   const [users, setUsers] = useState<User[]>([]);
 
-  console.log("witel: ", witel);
-  console.log("regional: ", regional);
-
   const handleEditClick = (user: any) => {
     setEditId(user._id);
     setUsername(user.username);

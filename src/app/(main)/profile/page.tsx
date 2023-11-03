@@ -31,8 +31,6 @@ export default function Profile() {
           newPassword,
         }),
       });
-      console.log("currentPassword: ", currentPassword);
-      console.log("newPassword: ", newPassword);
 
       if (res.ok) {
         setCurrentPassword("");
@@ -41,7 +39,6 @@ export default function Profile() {
         setSuccessMessage("Kata sandi berhasil diperbarui.");
         setErrorMessage("");
       } else {
-        console.log("Password update failed");
         setSuccessMessage("");
         setErrorMessage((await res.json()).message);
       }

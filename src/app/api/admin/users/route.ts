@@ -36,7 +36,6 @@ export async function POST(req: Request) {
       }
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "An error occured while registering the user.",
@@ -57,7 +56,6 @@ export async function GET(req: Request) {
       users,
     });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "An error occured while fetching users.",
