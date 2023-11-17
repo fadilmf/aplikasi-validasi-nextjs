@@ -152,12 +152,6 @@ export default function Search() {
     setWitel(witelParam);
     setStatus(statusParam);
 
-    console.log("regionalParams: ", regionalParams);
-    console.log("witelParamsss : ", witelParams);
-    console.log("statusParams : ", statusParams);
-    console.log("regional: ", regional);
-    console.log("witel: ", witel);
-
     fetchDevices(undefined, regionalParam, witelParam, statusParam).then(
       (data) => {
         setDevicesList(data.devices);

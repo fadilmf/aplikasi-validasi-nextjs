@@ -29,7 +29,6 @@ export default function HistoryId() {
   const fetchDevices = async () => {
     const res = await fetch("/api/devices/detail?sn=" + params.sn);
     const devices = await res.json();
-    console.log("data: ", devices);
     return devices.device;
   };
 
