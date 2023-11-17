@@ -8,7 +8,7 @@ const historySchema = new Schema(
       required: true,
     },
     device_sn: {
-      type: Number,
+      type: String,
       required: true,
     },
     images: [

@@ -23,6 +23,13 @@ export async function POST(req: Request) {
         telp,
         isValid,
       } = devices[i];
+
+      let stringTelp = String(telp);
+
+      const formattedTelp = stringTelp.startsWith("62")
+        ? Number(telp)
+        : Number(`62` + stringTelp);
+
       try {
         await Device.create({
           sn,
@@ -35,11 +42,12 @@ export async function POST(req: Request) {
           witel,
           use,
           nik,
-          telp,
+          telp: formattedTelp,
           isValid,
         });
-      } catch (e) {
-        failed.push(sn);
+      } catch (e: any) {
+        console.error(`Error adding device with SN ${sn}:`, e);
+        failed.push({ sn, error: e.toString() });
       }
     }
 

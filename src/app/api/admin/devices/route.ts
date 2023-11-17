@@ -19,6 +19,7 @@ export async function POST(req: Request) {
       isValid,
     } = await req.json();
     await connectMongoDB();
+
     await Device.create({
       sn,
       merk,
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
       jenis,
       nama,
       regional,
-      witel,
+      witel: witel ? witel : "all",
       use,
       nik,
       telp,

@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { MdFilterList, MdSearch } from "react-icons/md";
 import Loading from "@/components/Loading";
 import { useSession } from "next-auth/react";
+import witelList from "@/util/witel.json";
+import { format } from "url";
 
 export default function Search() {
   const [page, setPage] = useState(1);
@@ -38,20 +40,6 @@ export default function Search() {
     setDevicesList(devices.devices);
   };
 
-  const handlePrevious = () => {
-    setPage((p) => {
-      if (p === 1) return p;
-      return p - 1;
-    });
-  };
-
-  const handleNext = () => {
-    setPage((p) => {
-      if (p === pageCount) return p;
-      return p + 1;
-    });
-  };
-
   const fetchDevices = async (
     search?: string,
     reg?: number,
@@ -69,6 +57,8 @@ export default function Search() {
 
     if (wit) {
       queryParams.append("witel", wit);
+    } else {
+      queryParams.append("witel", "all");
     }
 
     if (stat) {
@@ -88,19 +78,43 @@ export default function Search() {
     const data = await res.json();
     setPageCount(data.pagination.pageCount);
 
-    router.push("/validasi");
-    // router.replace({
-    //   pathname: router.pathname,
-    //   query: queryParams.toString()
-    // })
+    // router.push("/validasi");
+    router.push(
+      format({
+        pathname: "/validasi",
+        query: queryParams.toString(),
+      })
+    );
 
     return data;
+  };
+
+  const handlePrevious = () => {
+    setPage((p) => {
+      if (p === 1) return p;
+      const newPage = p - 1;
+      const url = format({ pathname: "/validasi", query: { page: newPage } });
+      router.push(url);
+      return newPage;
+    });
+  };
+
+  const handleNext = () => {
+    setPage((p) => {
+      if (p === pageCount) return p;
+      const newPage = p + 1;
+      const url = format({ pathname: "/validasi", query: { page: newPage } });
+      router.push(url);
+      return newPage;
+    });
   };
 
   const changeRegional = async (reg: number) => {
     setLoading(true);
     setRegional(reg);
-    const devices = await fetchDevices(searchTerm, reg, witel, status);
+    setWitel("all");
+    setPage(1);
+    const devices = await fetchDevices(searchTerm, reg, "all", status);
     setDevicesList(devices.devices);
     setLoading(false);
   };
@@ -108,6 +122,7 @@ export default function Search() {
   const changeWitel = async (wit: string) => {
     setLoading(true);
     setWitel(wit);
+    setPage(1);
     const devices = await fetchDevices(searchTerm, regional, wit, status);
     setDevicesList(devices.devices);
     setLoading(false);
@@ -116,6 +131,7 @@ export default function Search() {
   const changeStatus = async (stat: string) => {
     setLoading(true);
     setStatus(stat);
+    setPage(1);
     const devices = await fetchDevices(searchTerm, regional, witel, stat);
     setDevicesList(devices.devices);
     setLoading(false);
@@ -123,21 +139,32 @@ export default function Search() {
 
   useEffect(() => {
     setLoading(true);
-    if (session) {
-      setRegional(session!!.user.regional);
-    }
+    // if (session) {
+    //   setRegional(session!!.user.regional);
+    // }
     // setRegional(Number(regionalParams));
-    setWitel(witelParams ? witelParams : "all");
-    fetchDevices(
-      undefined,
-      Number(regionalParams),
-      witelParams!!,
-      statusParams!!
-    ).then((data) => {
-      setDevicesList(data.devices);
-      setLoading(false);
-      setPageCount(data.pagination.pageCount);
-    });
+
+    const regionalParam = regionalParams ? Number(regionalParams) : 0;
+    const witelParam = witelParams ? witelParams : witel;
+    const statusParam = statusParams ? String(statusParams) : "";
+
+    setRegional(regionalParam);
+    setWitel(witelParam);
+    setStatus(statusParam);
+
+    console.log("regionalParams: ", regionalParams);
+    console.log("witelParamsss : ", witelParams);
+    console.log("statusParams : ", statusParams);
+    console.log("regional: ", regional);
+    console.log("witel: ", witel);
+
+    fetchDevices(undefined, regionalParam, witelParam, statusParam).then(
+      (data) => {
+        setDevicesList(data.devices);
+        setLoading(false);
+        setPageCount(data.pagination.pageCount);
+      }
+    );
   }, [page]);
 
   if (loading) return <Loading loading={loading} />;
@@ -186,15 +213,12 @@ export default function Search() {
                     className="p-2 border rounded w-36"
                     disabled={session?.user?.regional !== 0}
                   >
-                    <option value={0}>Semua Regional</option>
-                    <option value={1}>Regional 1</option>
-                    <option value={2}>Regional 2</option>
-                    <option value={3}>Regional 3</option>
-                    <option value={4}>Regional 4</option>
-                    <option value={5}>Regional 5</option>
-                    <option value={6}>Regional 6</option>
-                    <option value={7}>Regional 7</option>
-                    <option value={8}>Regional 8</option>
+                    <option value={0}>All Regional</option>
+                    {Object.keys(witelList).map((reg, i) => (
+                      <option key={i} value={reg}>
+                        Regional {reg}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -209,17 +233,14 @@ export default function Search() {
                     className="p-2 border rounded w-36"
                   >
                     <option value="all">All Witel</option>
-                    <option value="aceh">Aceh</option>
-                    <option value="medan">Medan</option>
-                    <option value="siantar">Siantar</option>
-                    <option value="batam">Batam</option>
-                    <option value="palembang">Palembang</option>
-                    <option value="jambi">Jambi</option>
-                    <option value="padang">Padang</option>
-                    <option value="pekanbaru">Pekanbaru</option>
-                    <option value="lampung">Lampung</option>
-                    <option value="bengkulu">Bengkulu</option>
-                    <option value="babel">Babel</option>
+                    {regional != 0 &&
+                      (witelList as any)[regional].map(
+                        (wit: string, i: number) => (
+                          <option key={i} value={wit}>
+                            {wit}
+                          </option>
+                        )
+                      )}
                   </select>
                 </div>
                 <div>

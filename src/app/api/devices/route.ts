@@ -35,25 +35,13 @@ export async function GET(req: NextRequest) {
           $or: [
             {
               $regexMatch: {
-                input: { $toString: "$sn" },
-                regex: new RegExp(search),
-              },
-            },
-            {
-              $regexMatch: {
-                input: { $toString: "$csm" },
+                input: { $toString: "$telp" },
                 regex: new RegExp(search),
               },
             },
             {
               $regexMatch: {
                 input: { $toString: "$nik" },
-                regex: new RegExp(search),
-              },
-            },
-            {
-              $regexMatch: {
-                input: { $toString: "$telp" },
                 regex: new RegExp(search),
               },
             },
@@ -64,6 +52,8 @@ export async function GET(req: NextRequest) {
           { perangkat: { $regex: search, $options: "i" } },
           { jenis: { $regex: search, $options: "i" } },
           { nama: { $regex: search, $options: "i" } },
+          { sn: { $regex: search, $options: "i" } },
+          { csm: { $regex: search, $options: "i" } },
         ];
     }
 

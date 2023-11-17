@@ -31,6 +31,13 @@ export async function POST(req: NextRequest) {
       role,
     };
 
+    if (regional === 0) {
+      updatedData.witel = "all";
+    } else {
+      updatedData.regional = regional;
+      updatedData.witel = witel;
+    }
+
     if (password !== undefined && password !== "") {
       const hashedPassword = await bcrypt.hash(password, 10);
       updatedData.password = hashedPassword;

@@ -6,6 +6,7 @@ import User from "@/types/User";
 import { getServerSession } from "next-auth";
 import { useEffect, useState } from "react";
 import { MdClose, MdDelete, MdDone, MdEdit, MdRefresh } from "react-icons/md";
+import witelList from "@/util/witel.json";
 
 export default function DashboardPage() {
   // const [isUser, setIsUser] = useState(false);
@@ -107,7 +108,7 @@ export default function DashboardPage() {
 
       if (res.ok) {
         setEditId("");
-        setSuccessMessage("User berhasil terupdate");
+        setSuccessMessage(`User ${username} berhasil terupdate`);
         setErrorMessage("");
 
         refreshUserList();
@@ -240,14 +241,11 @@ export default function DashboardPage() {
                             }
                           >
                             <option value={0}>All Regional</option>
-                            <option value={1}>1</option>
-                            <option value={2}>2</option>
-                            <option value={3}>3</option>
-                            <option value={4}>4</option>
-                            <option value={5}>5</option>
-                            <option value={6}>6</option>
-                            <option value={7}>7</option>
-                            <option value={8}>8</option>
+                            {Object.keys(witelList).map((reg, i) => (
+                              <option key={i} value={reg}>
+                                Regional {reg}
+                              </option>
+                            ))}
                           </select>
                         </td>
                         <td className="px-6 py-4 border-b border-gray-300">
@@ -258,17 +256,14 @@ export default function DashboardPage() {
                             onChange={(e) => setWitel(e.target.value)}
                           >
                             <option value="all">All Witel</option>
-                            <option value="aceh">Aceh</option>
-                            <option value="medan">Medan</option>
-                            <option value="siantar">Siantar</option>
-                            <option value="batam">Batam</option>
-                            <option value="palembang">Palembang</option>
-                            <option value="jambi">Jambi</option>
-                            <option value="padang">Padang</option>
-                            <option value="pekanbaru">Pekanbaru</option>
-                            <option value="lampung">Lampung</option>
-                            <option value="bengkulu">Bengkulu</option>
-                            <option value="babel">Babel</option>
+                            {regional != 0 &&
+                              (witelList as any)[regional].map(
+                                (wit: string, i: number) => (
+                                  <option key={i} value={wit}>
+                                    {wit}
+                                  </option>
+                                )
+                              )}
                           </select>
                         </td>
 

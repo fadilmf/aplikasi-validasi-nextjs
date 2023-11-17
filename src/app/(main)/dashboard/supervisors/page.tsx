@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import witelList from "@/util/witel.json";
 
 export default function SupervisorPage() {
   const [username, setUsername] = useState("");
@@ -89,11 +90,21 @@ export default function SupervisorPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
-              <option value={0}>All Regional</option>
+              {/* <option value={0}>All Regional</option>
               <option value={1}>Regional 1</option>
               <option value={2}>Regional 2</option>
               <option value={3}>Regional 3</option>
               <option value={4}>Regional 4</option>
+              <option value={5}>Regional 5</option>
+              <option value={6}>Regional 6</option>
+              <option value={7}>Regional 7</option>
+               */}
+              <option value={0}>All Regional</option>
+              {Object.keys(witelList).map((reg, i) => (
+                <option key={i} value={reg}>
+                  Regional {reg}
+                </option>
+              ))}
             </select>
           </div>
 

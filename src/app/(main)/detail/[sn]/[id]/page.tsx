@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 export default function HistoryId() {
   const [showButtons, setShowButtons] = useState(false);
-  const [device, setDevice] = useState<any[]>([]);
+  const [device, setDevice] = useState<any>([]);
   const [histories, setHistories] = useState<History[]>([]);
 
   const params = useParams();
@@ -27,9 +27,10 @@ export default function HistoryId() {
   };
 
   const fetchDevices = async () => {
-    const res = await fetch("/api/devices?sn=" + params.sn);
+    const res = await fetch("/api/devices/detail?sn=" + params.sn);
     const devices = await res.json();
-    return devices.devices;
+    console.log("data: ", devices);
+    return devices.device;
   };
 
   useEffect(() => {
@@ -67,8 +68,8 @@ export default function HistoryId() {
                   {histories[0]?.device_sn}
                 </div>
               </h1>
-              <p>Merk: {device[0]?.merk}</p>
-              <p>Status: {device[0]?.isValid ? "Valid" : "Tidak Valid"}</p>
+              <p>Merk: {device?.merk}</p>
+              <p>Status: {device?.isValid ? "Valid" : "Tidak Valid"}</p>
               <p>
                 Waktu Validasi: {dateTime(new Date(histories[0]?.createdAt))}
               </p>
@@ -78,23 +79,23 @@ export default function HistoryId() {
             <h1 className="font-semibold">Detail</h1>
             <div className="grid grid-cols-2 gap-2">
               <p>CSM:</p>
-              <p>{device[0]?.csm}</p>
+              <p>{device?.csm}</p>
               <p>Tipe Perangkat:</p>
-              <p>{device[0]?.perangkat}</p>
+              <p>{device?.perangkat}</p>
               <p>Jenis Perangkat:</p>
-              <p>{device[0]?.jenis}</p>
+              <p>{device?.jenis}</p>
               <p>Regional:</p>
-              <p>{device[0]?.regional}</p>
+              <p>{device?.regional}</p>
               <p>Witel:</p>
-              <p>{device[0]?.witel}</p>
+              <p>{device?.witel}</p>
               <p>Use:</p>
-              <p>{device[0]?.use}</p>
+              <p>{device?.use}</p>
               <p>NIK:</p>
-              <p>{device[0]?.nik}</p>
+              <p>{device?.nik}</p>
               <p>Nama:</p>
-              <p>{device[0]?.nama}</p>
+              <p>{device?.nama}</p>
               <p>No. Telp:</p>
-              <p>{device[0]?.telp}</p>
+              <p>{device?.telp}</p>
             </div>
           </div>
         </div>

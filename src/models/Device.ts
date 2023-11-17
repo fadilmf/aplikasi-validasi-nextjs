@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const deviceSchema = new Schema(
   {
     sn: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
@@ -12,7 +12,7 @@ const deviceSchema = new Schema(
       required: true,
     },
     csm: {
-      type: Number,
+      type: String,
       required: true,
     },
     perangkat: {
@@ -36,7 +36,7 @@ const deviceSchema = new Schema(
       required: true,
     },
     use: {
-      type: Number,
+      type: String,
       required: true,
     },
     nik: {

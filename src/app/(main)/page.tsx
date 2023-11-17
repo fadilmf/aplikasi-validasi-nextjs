@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MdDownload } from "react-icons/md";
+import witelList from "@/util/witel.json";
 
 export default function Home() {
   const [activeDevices, setActiveDevices] = useState(0);
@@ -33,7 +34,8 @@ export default function Home() {
   const changeRegional = (reg: number) => {
     setLoading(true);
     setRegional(reg);
-    fetchDevices(reg, witel);
+    setWitel("all");
+    fetchDevices(reg, "all");
   };
 
   const changeWitel = (wit: string) => {
@@ -92,15 +94,12 @@ export default function Home() {
                 className="p-2 border rounded"
                 disabled={session?.user?.regional !== 0}
               >
-                <option value={0}>Semua Regional</option>
-                <option value={1}>Regional 1</option>
-                <option value={2}>Regional 2</option>
-                <option value={3}>Regional 3</option>
-                <option value={4}>Regional 4</option>
-                <option value={5}>Regional 5</option>
-                <option value={6}>Regional 6</option>
-                <option value={7}>Regional 7</option>
-                <option value={8}>Regional 8</option>
+                <option value={0}>All Regional</option>
+                {Object.keys(witelList).map((reg, i) => (
+                  <option key={i} value={reg}>
+                    Regional {reg}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -117,17 +116,12 @@ export default function Home() {
                 onChange={(e) => changeWitel(e.target.value)}
               >
                 <option value="all">All Witel</option>
-                <option value="aceh">Aceh</option>
-                <option value="medan">Medan</option>
-                <option value="siantar">Siantar</option>
-                <option value="batam">Batam</option>
-                <option value="palembang">Palembang</option>
-                <option value="jambi">Jambi</option>
-                <option value="padang">Padang</option>
-                <option value="pekanbaru">Pekanbaru</option>
-                <option value="lampung">Lampung</option>
-                <option value="bengkulu">Bengkulu</option>
-                <option value="babel">Babel</option>
+                {regional != 0 &&
+                  (witelList as any)[regional].map((wit: string, i: number) => (
+                    <option key={i} value={wit}>
+                      {wit}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

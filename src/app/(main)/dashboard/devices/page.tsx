@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import Papa from "papaparse";
+import witelList from "@/util/witel.json";
 
 export default function DevicePage() {
-  const [sn, setSn] = useState(0);
+  const [sn, setSn] = useState("");
   const [merk, setMerk] = useState("");
-  const [csm, setCsm] = useState(0);
+  const [csm, setCsm] = useState("");
   const [perangkat, setPerangkat] = useState("");
   const [jenis, setJenis] = useState("");
   const [nama, setNama] = useState("");
   const [regional, setRegional] = useState(0);
   const [witel, setWitel] = useState("");
-  const [use, setUse] = useState(0);
+  const [use, setUse] = useState("");
   const [nik, setNik] = useState(0);
   const [telp, setTelp] = useState(0);
 
@@ -22,6 +23,11 @@ export default function DevicePage() {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [failedDevices, setFailedDevices] = useState<any[]>([]);
+  const [isFailedMenuOpen, setIsFailedMenuOpen] = useState(false);
+
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files!![0];
@@ -38,17 +44,31 @@ export default function DevicePage() {
   };
 
   const handleCsvSubmit = async () => {
-    fetch("/api/admin/devices/csv", {
+    setIsBtnLoading(true);
+    const res = await fetch("/api/admin/devices/csv", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ devices: csvData }),
     });
+
+    const json = await res.json();
+
+    if (res.ok) {
+      setSuccessMessage(json.message);
+      setErrorMessage(json.failed.length + " devices gagal ditambahkan");
+
+      setFailedDevices(json.failed);
+    } else {
+      setErrorMessage(json.message);
+    }
+    setIsBtnLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsBtnLoading(true);
     try {
       const res = await fetch("/api/admin/devices", {
         method: "POST",
@@ -66,28 +86,31 @@ export default function DevicePage() {
           witel,
           use,
           nik,
-          telp: "62" + telp,
+          telp: Number("62" + telp),
         }),
       });
 
       if (res.ok) {
-        setSn(0);
-        setCsm(0);
+        setSn("");
+        setCsm("");
         setPerangkat("");
         setJenis("");
         setNama("");
         setRegional(0);
-        setUse(0);
+        setUse("");
         setNik(0);
         setTelp(0);
 
         setErrorMessage("");
         setSuccessMessage("Device berhasil ditambahkan.");
       } else {
+        setErrorMessage("Device gagal ditambahkan");
+        setSuccessMessage("");
       }
     } catch (error) {
       console.log("Error during adding device: ", error);
     }
+    setIsBtnLoading(false);
   };
 
   return (
@@ -122,13 +145,45 @@ export default function DevicePage() {
             {errorMessage}
           </div>
         )}
+        {failedDevices.length > 0 && (
+          <>
+            <div className="mb-3">
+              <button
+                onClick={() => setIsFailedMenuOpen(!isFailedMenuOpen)}
+                className="bg-slate-500 hover:bg-slate-600 text-white py-2 px-4 rounded-full"
+              >
+                Lihat {failedDevices.length} devices yang gagal
+              </button>
+            </div>
+            {isFailedMenuOpen && (
+              <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-screen-md">
+                  {failedDevices.map((device, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-4 rounded-md shadow-md"
+                    >
+                      <p className="font-bold text-gray-800">
+                        Serial Number: {device.sn}
+                      </p>
+                      <p className="text-red-500">
+                        Gagal diupload: {device.error}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
         {isInputCSV && (
           <div className="mb-4">
             <input type="file" accept=".csv" onChange={handleCSVUpload} />
             <div className="mt-3">
               <button
                 onClick={handleCsvSubmit}
-                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full"
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full disabled:opacity-25 transition-opacity"
+                disabled={isBtnLoading}
               >
                 Add CSV
               </button>
@@ -140,10 +195,10 @@ export default function DevicePage() {
             <div className="mb-4">
               <label className="block text-gray-700">Serial Number:</label>
               <input
-                type="number"
+                type="text"
                 name="serialNumber"
                 value={sn}
-                onChange={(e) => setSn(Number(e.target.value))}
+                onChange={(e) => setSn(e.target.value)}
                 className="mt-1 p-2 border rounded w-full"
                 required
               />
@@ -162,10 +217,10 @@ export default function DevicePage() {
             <div className="mb-4">
               <label className="block text-gray-700">CSM:</label>
               <input
-                type="number"
+                type="text"
                 name="csm"
                 value={csm}
-                onChange={(e) => setCsm(Number(e.target.value))}
+                onChange={(e) => setCsm(e.target.value)}
                 className="mt-1 p-2 border rounded w-full"
                 required
               />
@@ -205,52 +260,48 @@ export default function DevicePage() {
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Regional:</label>
-              <input
-                type="number"
+              <select
                 name="regional"
                 value={regional}
                 onChange={(e) => setRegional(Number(e.target.value))}
                 className="mt-1 p-2 border rounded w-full"
                 required
-              />
+              >
+                <option value={0}>All Regional</option>
+                {Object.keys(witelList).map((reg, i) => (
+                  <option key={i} value={reg}>
+                    Regional {reg}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Witel:</label>
               <select
                 name="witel"
                 value={witel}
-                className="mt-1 p-2 border rounded w-full"
-                onChange={(e) => setWitel(e.target.value)}
-              >
-                <option value="all">All Witel</option>
-                <option value="aceh">Aceh</option>
-                <option value="medan">Medan</option>
-                <option value="siantar">Siantar</option>
-                <option value="batam">Batam</option>
-                <option value="palembang">Palembang</option>
-                <option value="jambi">Jambi</option>
-                <option value="padang">Padang</option>
-                <option value="pekanbaru">Pekanbaru</option>
-                <option value="lampung">Lampung</option>
-                <option value="bengkulu">Bengkulu</option>
-                <option value="babel">Babel</option>
-              </select>
-              {/* <input
-                type="text"
-                name="witel"
-                value={witel}
                 onChange={(e) => setWitel(e.target.value)}
                 className="mt-1 p-2 border rounded w-full"
                 required
-              /> */}
+              >
+                {regional != 0 ? (
+                  (witelList as any)[regional].map((wit: string, i: number) => (
+                    <option key={i} value={wit}>
+                      {wit}
+                    </option>
+                  ))
+                ) : (
+                  <option value="all">All Witel</option>
+                )}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-gray-700">Device Use:</label>
               <input
-                type="number"
+                type="text"
                 name="deviceUse"
                 value={use}
-                onChange={(e) => setUse(Number(e.target.value))}
+                onChange={(e) => setUse(e.target.value)}
                 className="mt-1 p-2 border rounded w-full"
                 required
               />
@@ -283,7 +334,8 @@ export default function DevicePage() {
             <div className="mt-4">
               <button
                 type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full"
+                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full disabled:opacity-25 transition-opacity"
+                disabled={isBtnLoading}
               >
                 Add Device
               </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import witelList from "@/util/witel.json";
 
 export default function UserPage() {
   const [username, setUsername] = useState("");
@@ -92,7 +93,7 @@ export default function UserPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
-              <option value={0}>All Regional</option>
+              {/* <option value={0}>All Regional</option>
               <option value={1}>Regional 1</option>
               <option value={2}>Regional 2</option>
               <option value={3}>Regional 3</option>
@@ -100,7 +101,13 @@ export default function UserPage() {
               <option value={5}>Regional 5</option>
               <option value={6}>Regional 6</option>
               <option value={7}>Regional 7</option>
-              <option value={8}>Regional 8</option>
+               */}
+              <option value={0}>All Regional</option>
+              {Object.keys(witelList).map((reg, i) => (
+                <option key={i} value={reg}>
+                  Regional {reg}
+                </option>
+              ))}
             </select>
           </div>
           <div className="mb-4">
@@ -112,7 +119,7 @@ export default function UserPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
-              <option value="all">All Witel</option>
+              {/* <option value="all">All Witel</option>
               <option value="aceh">Aceh</option>
               <option value="medan">Medan</option>
               <option value="siantar">Siantar</option>
@@ -123,7 +130,16 @@ export default function UserPage() {
               <option value="pekanbaru">Pekanbaru</option>
               <option value="lampung">Lampung</option>
               <option value="bengkulu">Bengkulu</option>
-              <option value="babel">Babel</option>
+              <option value="babel">Babel</option> */}
+              {regional != 0 ? (
+                (witelList as any)[regional].map((wit: string, i: number) => (
+                  <option key={i} value={wit}>
+                    {wit}
+                  </option>
+                ))
+              ) : (
+                <option value="all">All Witel</option>
+              )}
             </select>
           </div>
           <div className="mb-4">
