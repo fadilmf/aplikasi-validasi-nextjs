@@ -13,6 +13,11 @@ export default function UserPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const changeRegional = (reg: number) => {
+    setRegional(reg);
+    setWitel("all");
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -89,7 +94,7 @@ export default function UserPage() {
             <select
               name="regional"
               value={regional}
-              onChange={(e) => setRegional(Number(e.target.value))}
+              onChange={(e) => changeRegional(Number(e.target.value))}
               className="mt-1 p-2 border rounded w-full"
               required
             >
@@ -119,27 +124,13 @@ export default function UserPage() {
               className="mt-1 p-2 border rounded w-full"
               required
             >
-              {/* <option value="all">All Witel</option>
-              <option value="aceh">Aceh</option>
-              <option value="medan">Medan</option>
-              <option value="siantar">Siantar</option>
-              <option value="batam">Batam</option>
-              <option value="palembang">Palembang</option>
-              <option value="jambi">Jambi</option>
-              <option value="padang">Padang</option>
-              <option value="pekanbaru">Pekanbaru</option>
-              <option value="lampung">Lampung</option>
-              <option value="bengkulu">Bengkulu</option>
-              <option value="babel">Babel</option> */}
-              {regional != 0 ? (
+              <option value="all">All Witel</option>
+              {regional != 0 &&
                 (witelList as any)[regional].map((wit: string, i: number) => (
                   <option key={i} value={wit}>
                     {wit}
                   </option>
-                ))
-              ) : (
-                <option value="all">All Witel</option>
-              )}
+                ))}
             </select>
           </div>
           <div className="mb-4">

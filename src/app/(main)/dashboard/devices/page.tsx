@@ -29,6 +29,11 @@ export default function DevicePage() {
 
   const [isBtnLoading, setIsBtnLoading] = useState(false);
 
+  const changeRegional = (reg: number) => {
+    setRegional(reg);
+    setWitel("all");
+  };
+
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files!![0];
 
@@ -96,6 +101,7 @@ export default function DevicePage() {
         setPerangkat("");
         setJenis("");
         setNama("");
+        setMerk("");
         setRegional(0);
         setUse("");
         setNik(0);
@@ -263,7 +269,7 @@ export default function DevicePage() {
               <select
                 name="regional"
                 value={regional}
-                onChange={(e) => setRegional(Number(e.target.value))}
+                onChange={(e) => changeRegional(Number(e.target.value))}
                 className="mt-1 p-2 border rounded w-full"
                 required
               >
@@ -284,15 +290,13 @@ export default function DevicePage() {
                 className="mt-1 p-2 border rounded w-full"
                 required
               >
-                {regional != 0 ? (
+                <option value="all">All Witel</option>
+                {regional != 0 &&
                   (witelList as any)[regional].map((wit: string, i: number) => (
                     <option key={i} value={wit}>
                       {wit}
                     </option>
-                  ))
-                ) : (
-                  <option value="all">All Witel</option>
-                )}
+                  ))}
               </select>
             </div>
             <div className="mb-4">
