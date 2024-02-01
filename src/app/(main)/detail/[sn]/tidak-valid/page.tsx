@@ -1,7 +1,8 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function TidakValidPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function TidakValidPage() {
   const [error, setError] = useState("");
 
   const params = useParams();
+  const { data: session } = useSession();
 
   const handleCancel = () => {
     window.history.back();
@@ -34,6 +36,12 @@ export default function TidakValidPage() {
       setError(json.message);
     }
   };
+
+  useEffect(() => {
+    if (session && session.user.role === "viewer") {
+      router.back();
+    }
+  });
 
   return (
     <>

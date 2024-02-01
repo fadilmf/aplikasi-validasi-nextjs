@@ -3,6 +3,7 @@
 import Loading from "@/components/Loading";
 import History from "@/types/History";
 import dateTime from "@/util/dateTime";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -20,6 +21,9 @@ export default function Detail() {
   const [errorPageMessage, setErrorPageMessage] = useState("");
 
   const params = useParams();
+
+  const { data: session } = useSession();
+  const viewer = session?.user.role === "viewer";
 
   const handleUpdateClick = () => {
     setShowButtons(!showButtons);
@@ -143,42 +147,46 @@ export default function Detail() {
             </div> */}
             </div>
           </div>
-          <div className="mt-5">
-            <button
-              className={`w-full bg-green-700 py-2 rounded-full text-white hover:bg-green-800 ${
-                showButtons && "hidden"
-              }`}
-              onClick={handleUpdateClick}
-            >
-              Update
-            </button>
-          </div>
-          <div className="my-5">
-            {showButtons && (
-              <div className="flex flex-col gap-4">
-                <div className="flex text-center space-x-4 ">
-                  <Link
-                    href={params.sn + "/valid"}
-                    className="bg-green-800 py-2 px-4 rounded-full w-full text-white hover:bg-green-900"
-                  >
-                    Valid
-                  </Link>
-                  <Link
-                    href={params.sn + "/tidak-valid"}
-                    className="bg-red-500 py-2 px-4 rounded-full w-full text-white hover:bg-red-600"
-                  >
-                    Tidak Valid
-                  </Link>
-                </div>
+          {!viewer && (
+            <div>
+              <div className="mt-5">
                 <button
+                  className={`w-full bg-green-700 py-2 rounded-full text-white hover:bg-green-800 ${
+                    showButtons && "hidden"
+                  }`}
                   onClick={handleUpdateClick}
-                  className="bg-white border-2 border-green-800 py-2 px-4 rounded-full text-green-800 hover:bg-slate-100"
                 >
-                  Cancel
+                  Update
                 </button>
               </div>
-            )}
-          </div>
+              <div className="my-5">
+                {showButtons && (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex text-center space-x-4 ">
+                      <Link
+                        href={params.sn + "/valid"}
+                        className="bg-green-800 py-2 px-4 rounded-full w-full text-white hover:bg-green-900"
+                      >
+                        Valid
+                      </Link>
+                      <Link
+                        href={params.sn + "/tidak-valid"}
+                        className="bg-red-500 py-2 px-4 rounded-full w-full text-white hover:bg-red-600"
+                      >
+                        Tidak Valid
+                      </Link>
+                    </div>
+                    <button
+                      onClick={handleUpdateClick}
+                      className="bg-white border-2 border-green-800 py-2 px-4 rounded-full text-green-800 hover:bg-slate-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {device?.isValid && (
             <div className="flex justify-center text-center w-full">
               <h1>Device valid selama {daysSinceValid} hari</h1>

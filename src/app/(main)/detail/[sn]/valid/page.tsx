@@ -3,13 +3,13 @@
 import Camera from "@/components/Camera";
 import Loading from "@/components/Loading";
 import dateTime from "@/util/dateTime";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { createRef, useEffect, useRef, useState } from "react";
 import { MdClose } from "react-icons/md";
 
 export default function ValidPage() {
-  const router = useRouter();
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [locationPermission, setLocationPermission] = useState(true);
@@ -21,6 +21,9 @@ export default function ValidPage() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const params = useParams();
+  const router = useRouter();
+
+  const { data: session } = useSession();
 
   const imageElements = () => {
     const el = [];
@@ -114,6 +117,9 @@ export default function ValidPage() {
 
   useEffect(() => {
     // getLocation();
+    if (session && session.user.role === "viewer") {
+      router.back();
+    }
 
     const updateDate = () => {
       setDate(dateTime());

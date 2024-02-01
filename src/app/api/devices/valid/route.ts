@@ -12,6 +12,18 @@ export async function POST(req: Request) {
     await connectMongoDB();
 
     const session = await getServerSession(authOptions);
+
+    if (!session || session.user.role === "viewer") {
+      return NextResponse.json(
+        {
+          message: "Permission denied",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
     const regional = session?.user.regional;
     const userId = session?.user.id;
 

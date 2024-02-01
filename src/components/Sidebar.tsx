@@ -9,6 +9,7 @@ import {
   MdDevices,
   MdPersonAdd,
   MdSettings,
+  MdSupervisorAccount,
 } from "react-icons/md";
 
 const menuItems = [
@@ -17,7 +18,7 @@ const menuItems = [
   {
     id: 3,
     label: "Add Supervisor",
-    icon: MdPersonAdd,
+    icon: MdSupervisorAccount,
     link: "/dashboard/supervisors",
   },
   { id: 4, label: "Add Device", icon: MdDevices, link: "/dashboard/devices" },

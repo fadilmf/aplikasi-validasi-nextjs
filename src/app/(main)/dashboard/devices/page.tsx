@@ -40,6 +40,7 @@ export default function DevicePage() {
     Papa.parse(file, {
       header: true,
       dynamicTyping: true,
+      skipEmptyLines: true,
       complete: (result) => {
         const data = result.data;
 
