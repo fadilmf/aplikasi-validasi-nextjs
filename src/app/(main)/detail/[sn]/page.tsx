@@ -16,6 +16,7 @@ export default function Detail() {
   const [images, setImages] = useState<string[]>([]);
   const [histories, setHistories] = useState<History[]>([]);
   const [daysSinceValid, setDaysSinceValid] = useState(0);
+  const [lastDate, setLastDate] = useState<any>();
   const [loading, setLoading] = useState(true);
 
   const [errorPageMessage, setErrorPageMessage] = useState("");
@@ -48,13 +49,26 @@ export default function Detail() {
     return data.device;
   };
 
+  const checkIsValidAt = (d: any) => {
+    let lastDate = d?.validAt;
+    if (d?.validAt) {
+      lastDate = d?.validAt;
+    } else {
+      lastDate = d?.createdAt;
+    }
+    return lastDate;
+  };
+
   useEffect(() => {
     setLoading(true);
     fetchDevices().then((devices) => {
-      const msSinceValid =
-        new Date().getTime() - new Date(devices?.validAt).getTime();
-      setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
       setDevice(devices);
+      const lastValidDate = checkIsValidAt(devices);
+      setLastDate(lastValidDate);
+      const msSinceValid =
+        new Date().getTime() - new Date(lastValidDate).getTime();
+      // new Date().getTime() - new Date(devices?.validAt).getTime();
+      setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
       fetchHistory().then((histories) => {
         setHistories(histories);
         setLoading(false);
@@ -98,7 +112,7 @@ export default function Detail() {
                 <p>Merk: {device?.merk}</p>
                 <p>Status: {device?.isValid ? "Valid" : "Tidak Valid"}</p>
                 {device?.isValid && (
-                  <p>Last Validasi: {dateTime(new Date(device.validAt))}</p>
+                  <p>Last Validasi: {dateTime(new Date(lastDate))}</p>
                 )}
               </div>
             </div>

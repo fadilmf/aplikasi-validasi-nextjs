@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Device from "@/models/Device";
+import checkIsValidAt from "@/util/lastDate";
+import Setting from "@/models/Setting";
 
 export async function GET(req: NextRequest) {
   try {
@@ -48,6 +50,15 @@ export async function GET(req: NextRequest) {
           status: 403,
         }
       );
+    }
+
+    const settings = await Setting.find();
+
+    const msSinceValid =
+      new Date().getTime() - new Date(checkIsValidAt(device)).getTime();
+    const daysSinceValid = Math.floor(msSinceValid / 1000 / 86400);
+    if (daysSinceValid >= settings[0].expiration_days) {
+      device.isValid = false;
     }
 
     return NextResponse.json({ device });
