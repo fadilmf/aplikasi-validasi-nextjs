@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Device from "@/models/Device";
-import checkIsValidAt from "@/util/lastDate";
 import Setting from "@/models/Setting";
 
 export async function GET(req: NextRequest) {
@@ -54,14 +53,18 @@ export async function GET(req: NextRequest) {
 
     const settings = await Setting.find();
 
+    const expirationDays = settings[0].expiration_days;
+
     const msSinceValid =
-      new Date().getTime() - new Date(checkIsValidAt(device)).getTime();
+      new Date().getTime() - new Date(device.validAt).getTime();
     const daysSinceValid = Math.floor(msSinceValid / 1000 / 86400);
+
     if (daysSinceValid >= settings[0].expiration_days) {
       device.isValid = false;
+      await Device.findOneAndUpdate({ sn }, { isValid: false });
     }
 
-    return NextResponse.json({ device });
+    return NextResponse.json({ device, expirationDays });
   } catch (error) {
     return NextResponse.json(
       {

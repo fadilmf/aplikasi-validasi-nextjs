@@ -59,11 +59,22 @@ export default function Home() {
     }
   };
 
+  const autoInvalidDevice = async () => {
+    try {
+      await fetch("api/check-valid");
+    } catch (error) {
+      console.error(
+        "Terjadi error di server saat melakukan auto update status valid device"
+      );
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     if (session) {
       setRegional(session!!.user.regional);
     }
+    autoInvalidDevice();
     fetchDevices();
   }, [session]);
 

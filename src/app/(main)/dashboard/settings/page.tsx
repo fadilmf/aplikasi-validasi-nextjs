@@ -35,6 +35,9 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({
           autoDisableDays,
+          expirationDate: new Date().setDate(
+            new Date().getDate() + autoDisableDays
+          ),
         }),
       });
 

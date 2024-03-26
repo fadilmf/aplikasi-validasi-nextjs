@@ -15,7 +15,7 @@ export default function Detail() {
   const [device, setDevice] = useState<any>();
   const [images, setImages] = useState<string[]>([]);
   const [histories, setHistories] = useState<History[]>([]);
-  const [daysSinceValid, setDaysSinceValid] = useState(0);
+  const [daysAutoNotValid, setDaysAutoNotValid] = useState(0);
   const [lastDate, setLastDate] = useState<any>();
   const [loading, setLoading] = useState(true);
 
@@ -46,29 +46,20 @@ export default function Detail() {
     if (data.status != 200) {
       setErrorPageMessage(data.message);
     }
-    return data.device;
-  };
-
-  const checkIsValidAt = (d: any) => {
-    let lastDate = d?.validAt;
-    if (d?.validAt) {
-      lastDate = d?.validAt;
-    } else {
-      lastDate = d?.createdAt;
-    }
-    return lastDate;
+    return data;
   };
 
   useEffect(() => {
     setLoading(true);
-    fetchDevices().then((devices) => {
-      setDevice(devices);
-      const lastValidDate = checkIsValidAt(devices);
-      setLastDate(lastValidDate);
+    fetchDevices().then((data) => {
+      setDevice(data.device);
+      const lastValidDate = data.device.validAt;
+      setLastDate(data.device.validAt);
+
       const msSinceValid =
         new Date().getTime() - new Date(lastValidDate).getTime();
-      // new Date().getTime() - new Date(devices?.validAt).getTime();
-      setDaysSinceValid(Math.floor(msSinceValid / 1000 / 86400));
+      let daysSinceValid = Math.floor(msSinceValid / 1000 / 86400);
+      setDaysAutoNotValid(data.expirationDays - daysSinceValid);
       fetchHistory().then((histories) => {
         setHistories(histories);
         setLoading(false);
@@ -203,7 +194,8 @@ export default function Detail() {
           )}
           {device?.isValid && (
             <div className="flex justify-center text-center w-full">
-              <h1>Device valid selama {daysSinceValid} hari</h1>
+              {/* <h1>Device valid selama {daysSinceValid} hari</h1> */}
+              <h1>Device akan tidak valid dalam {daysAutoNotValid} hari</h1>
             </div>
           )}
           {histories?.length > 0 && (

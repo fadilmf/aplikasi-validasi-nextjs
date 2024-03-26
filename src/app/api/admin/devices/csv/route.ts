@@ -44,6 +44,7 @@ export async function POST(req: Request) {
           nik,
           telp: formattedTelp,
           isValid,
+          validAt: isValid ? new Date() : null,
         });
       } catch (e: any) {
         console.error(`Error adding device with SN ${sn}:`, e);
