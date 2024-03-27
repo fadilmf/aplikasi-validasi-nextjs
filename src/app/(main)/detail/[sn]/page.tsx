@@ -3,6 +3,7 @@
 import Loading from "@/components/Loading";
 import History from "@/types/History";
 import dateTime from "@/util/dateTime";
+import checkLastDate from "@/util/lastDate";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,8 +54,9 @@ export default function Detail() {
     setLoading(true);
     fetchDevices().then((data) => {
       setDevice(data.device);
-      const lastValidDate = data.device.validAt;
-      setLastDate(data.device.validAt);
+      // const lastValidDate = data.device.validAt;
+      const lastValidDate = checkLastDate(data.device);
+      setLastDate(lastValidDate);
 
       const msSinceValid =
         new Date().getTime() - new Date(lastValidDate).getTime();

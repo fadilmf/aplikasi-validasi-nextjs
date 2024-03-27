@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Device from "@/models/Device";
 import Setting from "@/models/Setting";
+import checkLastDate from "@/util/lastDate";
 
 export async function GET(req: NextRequest) {
   try {
@@ -55,8 +56,9 @@ export async function GET(req: NextRequest) {
 
     const expirationDays = settings[0].expiration_days;
 
+    const lastValidDate = checkLastDate(device);
     const msSinceValid =
-      new Date().getTime() - new Date(device.validAt).getTime();
+      new Date().getTime() - new Date(lastValidDate).getTime();
     const daysSinceValid = Math.floor(msSinceValid / 1000 / 86400);
 
     if (daysSinceValid >= settings[0].expiration_days) {
