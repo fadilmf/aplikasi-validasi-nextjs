@@ -208,7 +208,10 @@ export default function Detail() {
               <ol className="list-decimal list-inside">
                 {histories.map((history, index) => (
                   <li key={index}>
-                    <Link href={`${params.sn}/${history._id}`}>
+                    <Link
+                      className="hover:text-blue-500 hover:underline"
+                      href={`${params.sn}/${history._id}`}
+                    >
                       {dateTime(new Date(history?.createdAt))} <span>by</span>{" "}
                       {history?.user?.username}
                     </Link>

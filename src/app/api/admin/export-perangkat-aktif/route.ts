@@ -6,7 +6,23 @@ export async function GET(req: NextRequest) {
   try {
     await connectMongoDB();
 
-    const devices = await Device.find({}, { _id: 0 });
+    const regionalParam = Number(req.nextUrl.searchParams.get("regional"));
+    const witelParam = req.nextUrl.searchParams.get("witel");
+
+    let devices;
+
+    if (regionalParam === 0) {
+      devices = await Device.find({}, { _id: 0 });
+    } else if (witelParam == "all") {
+      devices = await Device.find({
+        regional: regionalParam,
+      });
+    } else {
+      devices = await Device.find({
+        regional: regionalParam,
+        witel: witelParam,
+      });
+    }
 
     return NextResponse.json({ devices }, { status: 200 });
   } catch (error) {

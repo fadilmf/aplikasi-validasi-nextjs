@@ -48,7 +48,9 @@ export default function Home() {
 
   const handleExportCSV = async () => {
     try {
-      const res = await fetch("api/admin/export-perangkat-aktif");
+      const res = await fetch(
+        `api/admin/export-perangkat-aktif?regional=${regional}&witel=${witel}`
+      );
       const data = await res.json();
 
       if (data.devices) {
